@@ -12,12 +12,10 @@
         android:layout_height="330dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_gravity="center"
-        android:layout_marginStart="37dp"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="17dp"
-        android:layout_marginEnd="33dp"
-        android:layout_marginBottom="265dp"
+        android:layout_marginEnd="35dp"
         android:background="@color/black"
         app:iss_auto_cycle="true"
         app:iss_corner_radius="0"
@@ -27,29 +25,18 @@
         app:iss_placeholder="@color/black"
         app:iss_text_align="CENTER">
 
-
     </com.denzcoskun.imageslider.ImageSlider>
 
     <TextView
         android:id="@+id/textsize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/slider"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="69dp"
-        android:layout_marginBottom="84dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="93dp"
+        android:layout_marginBottom="-49dp"
         android:text="TextView" />
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/slider"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:onClick="goToAnotherActivity"
-        android:text="Продолжить" />
 
 
 </RelativeLayout>
