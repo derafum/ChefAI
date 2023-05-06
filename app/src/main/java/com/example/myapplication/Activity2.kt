@@ -20,8 +20,15 @@ class Activity2 : AppCompatActivity() {
     private var count = 0
     private var count_need = 0
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        getSupportActionBar()?.hide()
+
+
         setContentView(R.layout.activity_2)
 
         val imageList: MutableList<SlideModel> = ArrayList() // Create image list

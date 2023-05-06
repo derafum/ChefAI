@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         if (isFirstRun) {
             //show start activity
-            startActivity(Intent(this@MainActivity, Activity2::class.java))
+            startActivity(Intent(this@MainActivity, Testpy::class.java))
             Toast.makeText(this@MainActivity, "First Run", Toast.LENGTH_LONG)
                 .show()
         }
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.item1 -> {
                     Toast.makeText(this, "Главная", Toast.LENGTH_SHORT).show()
+
                 }
                 R.id.item2 -> {
                     Toast.makeText(this, "Поиск", Toast.LENGTH_SHORT).show()

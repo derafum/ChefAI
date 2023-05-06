@@ -12,11 +12,13 @@
         android:id="@+id/panelAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#fff"
         android:elevation="10dp"
         android:orientation="vertical"
-        android:padding="20dp"
 
-        android:background="#fff">
+        android:padding="20dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-4dp">
 
     </LinearLayout>
 
@@ -35,6 +37,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_menu" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="290dp"
+        android:layout_height="83dp"
+        android:text="Здесь может быть ваша реклама"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/bNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/panelAddress" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
