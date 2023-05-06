@@ -18,16 +18,14 @@ class Testpy : AppCompatActivity() {
             Python.start(AndroidPlatform(this));
         }
         val python = Python.getInstance()
-        val module = python.getModule("script")
+        val module = python.getModule("Rec_system")
 
-        val num = module["number"]?.toInt()
+        val num = module["number_recomend"]?.toInt()
         println("The value of num is $num")
 
-        val text = module["text"]?.toString()
-        println("The value of num is $text")
 
 
-        val fact = module["factorial"]
+        val fact = module["rec_system"]
         val a = fact?.call(5)
 
         println("The value of num is $a")
