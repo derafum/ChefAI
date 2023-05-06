@@ -8,18 +8,6 @@
     tools:context=".MainActivity">
 
 
-    <LinearLayout
-        android:id="@+id/panelAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="10dp"
-        android:orientation="vertical"
-        android:padding="20dp"
-
-        android:background="#fff">
-
-    </LinearLayout>
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bNav"
 
@@ -36,5 +24,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_menu" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonAdd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Add recipe"
+        app:layout_constraintBottom_toTopOf="@+id/bNav"
+        app:layout_constraintEnd_toEndOf="@+id/reView"
+        app:layout_constraintStart_toStartOf="@+id/reView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,11 +6,23 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding:ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
+    private val adapter = RecipeAdapter()
+    private val imageIdList = listOf(
+        R.drawable.recipe1,
+        R.drawable.recipe2,
+        R.drawable.recipe3,
+        R.drawable.recipe4,
+        R.drawable.recipe5,
+        R.drawable.recipe6,
+    )
+    private var index = 0
+
 
 
 
@@ -57,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        init()
         Log.d("MyLogMAct", "OnCreate")
     }
 
@@ -93,5 +106,16 @@ class MainActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         Log.d("MyLogMAct", "onRestart")
+    }
+    private fun init() = with(binding){
+        reView.layoutManager = LinearLayoutManager(this@MainActivity)
+        reView.adapter = adapter
+        buttonAdd.setOnClickListener{
+            if(index > 4) index = 0
+            val recipe = Recipe(imageIdList[index], "Recipe $index", "Time: 10 минут" )
+            adapter.addRecipe(recipe)
+            index++
+
+        }
     }
 }
