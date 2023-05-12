@@ -11,7 +11,7 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
-
+import kotlin.random.Random
 
 class Activity2 : AppCompatActivity() {
     private var lastClickTime: Long = 0
@@ -19,6 +19,21 @@ class Activity2 : AppCompatActivity() {
     private var checkClick = false
     private var count = 0
     private var count_need = 0
+
+    val numbers = arrayOf(17094, 16311, 14043, 26160, 10172, 25646, 7438, 28691, 29637, 4694, 14155, 8247, 12383, 799, 304, 22393, 28175, 27144, 28077, 4013, 25912, 12860, 29054, 12750, 25957, 10840, 3242, 27811, 874, 29450, 12884, 24518, 7586, 22579, 28491, 20364, 28214, 24002, 17142, 20162)
+
+    fun getRandomNumbers(numbers: Array<Int>): List<Int> {
+        val randomNumbers = mutableListOf<Int>()
+        val random = Random.Default
+
+        // Выбираем 5 случайных чисел из массива
+        for (i in 0 until 5) {
+            val randomNumber = numbers[random.nextInt(numbers.size)]
+            randomNumbers.add(randomNumber)
+        }
+
+        return randomNumbers
+    }
 
 
 
@@ -28,16 +43,39 @@ class Activity2 : AppCompatActivity() {
 
         getSupportActionBar()?.hide()
 
+        val dbHelper = DatabaseHelper(this)
+
+
+        val randomNumbers = getRandomNumbers(numbers)
+
+
+        val recipeMap = mutableMapOf<Int, Pair<String, String>>()
+
+        val imageList: MutableList<SlideModel> = ArrayList() // Create image list
+
+        for (i in randomNumbers){
+            val result = dbHelper.getRecipeUrlAndImgByNumber(i)
+            if (result != null) {
+                val (title, img) = result
+                imageList.add(SlideModel(img, title, ScaleTypes.FIT))
+
+            }
+
+
+        }
+
+        val result = dbHelper.getRecipeUrlAndImgByNumber(42)
+        if (result != null) {
+            val (recipeUrl, recipeImg) = result
+            Log.d("Recipes", "URL: $recipeUrl, IMG: $recipeImg")
+        } else {
+            Log.d("Recipes", "No recipe found with number 42")
+        }
+
+        dbHelper.close()
 
         setContentView(R.layout.activity_2)
 
-        val imageList: MutableList<SlideModel> = ArrayList() // Create image list
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/120131082957/160116111633/p_O.jpg", "Итальянская курица по-охотничьи", ScaleTypes.FIT))
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/160321003649/210623123415/p_O.jpeg", "Спагетти с трюфельным соусом", ScaleTypes.FIT))
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/120213175727/120213175945/p_O.jpg", "Картофельные лепешки", ScaleTypes.FIT))
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/120131082151/120620211337/p_O.jpg", "Бараньи котлетки с зеленым чесноком на гриле", ScaleTypes.FIT))
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/120131083458/130806175411/p_O.jpg", "Рагу с баклажанами а-ля итальяно", ScaleTypes.FIT))
-        imageList.add(SlideModel("https://eda.ru/img/eda/c180x180/s1.eda.ru/StaticContent/Photos/120213181923/120213182254/p_O.jpg", "Говядина в соусе из красной фасоли", ScaleTypes.FIT))
 
         val imageSlider = findViewById<ImageSlider>(R.id.slider)
         imageSlider.setImageList(imageList)
@@ -53,40 +91,21 @@ class Activity2 : AppCompatActivity() {
 
         val textViewString = textView.text.toString()
 
+        val selectedImages: MutableList<Int> = mutableListOf()
 
         imageSlider.setItemClickListener(object : ItemClickListener {
             override fun onItemSelected(position: Int) {
                 val currentTime = System.currentTimeMillis()
-                if ((currentTime - lastClickTime < 500) and (checkClick)) {
-                    Log.d("MyLogMAct", "Image $position not selected")
-                    Toast.makeText(this@Activity2, "Image $position not selected", Toast.LENGTH_SHORT).show()
-                    checkClick = true
-                    isButtonSelected = false
-                    count_need -= 2
-                    if (count_need <=0) {
-                        count_need = 0
-                    }
+                if (selectedImages.contains(position)) {
+                    selectedImages.remove(position)
+                } else {
+                    selectedImages.add(position)
                 }
-                else if (lastClickTime > 0) {
-                    Log.d("MyLogMAct", "Image $position selected")
-                    Toast.makeText(this@Activity2, "Image $position selected", Toast.LENGTH_SHORT).show()
-                    checkClick = true
-                    isButtonSelected = true
-                    count_need += 1
-                    if (count_need >=count) {
-                        count_need = count
-                    }
-                }
-// Set text
-
-                textView.text = "Count $count_need / $count"
-// Get text
-                lastClickTime = currentTime
-
+                val selectedCount = selectedImages.size
+                textView.text = "Count $selectedCount / $count"
+                Log.d("MyLogMAct", "Count $selectedCount / $count")
             }
-
         })
-
 
     }
     fun goToAnActivity(view: View?) {

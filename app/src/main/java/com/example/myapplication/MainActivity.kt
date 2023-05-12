@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         if (isFirstRun) {
             //show start activity
-            startActivity(Intent(this@MainActivity, Testpy::class.java))
+            startActivity(Intent(this@MainActivity, Activity2::class.java))
             Toast.makeText(this@MainActivity, "First Run", Toast.LENGTH_LONG)
                 .show()
         }
