@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.myapplication.ui.home.Home
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -13,6 +14,7 @@ import java.io.InputStream
 
 class DatabaseHelper(private val context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
 
     companion object {
         private const val DATABASE_VERSION = 1
@@ -52,6 +54,8 @@ class DatabaseHelper(private val context: Context) :
             e.printStackTrace()
         }
     }
+
+
 
     override fun onCreate(db: SQLiteDatabase) {
         // Database creation not needed here since it's already created from the assets

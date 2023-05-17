@@ -27,6 +27,8 @@ class Analize : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(AnalizeViewModel::class.java)
         // TODO: Use the ViewModel
+
+
     }
 
 }

@@ -117,40 +117,6 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
 
-        val dbHelper = DatabaseHelper(this)
-        var offset = 0
-        var recipes = dbHelper.getTopRecipesByLikes(10, offset)
-
-
-        binding.reView.layoutManager = LinearLayoutManager(this@MainActivity)
-        var adapter = RecipeAdapter()
-        binding.reView.adapter = adapter
-
-        var i = 0
-
-        for (recipe in recipes) {
-            val name = recipe.name
-            val img = recipe.img
-            val time = recipe.time
-            offset += 10
-            val recipe = Recipe(img, name, "Time: $time")
-            adapter.addRecipe(recipe)
-            i += 1
-            Log.d("recipe", "Name, $name, img, $img, time, $time")
-        }
-
-
-        recipes = dbHelper.getTopRecipesByLikes(10, offset)
-        for (recipe in recipes) {
-            val name = recipe.name
-            val img = recipe.img
-            val time = recipe.time
-            offset += 10
-            // Дальнейшая обработка данных рецепта
-            Log.d("recipe", "Name2, $name, img2, $img, time2, $time")
-        }
-
-
 
         Log.d("MyLogMAct", "OnCreate")
     }

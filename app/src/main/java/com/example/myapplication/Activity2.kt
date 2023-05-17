@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
@@ -43,7 +42,7 @@ class Activity2 : AppCompatActivity() {
 
         getSupportActionBar()?.hide()
 
-        val dbHelper = DatabaseHelper(this)
+        val dbHelper = DatabaseHelper(this@Activity2)
 
 
         val randomNumbers = getRandomNumbers(numbers)
