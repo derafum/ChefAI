@@ -6,14 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.FoodAdapter
 
-class Activity3 : AppCompatActivity() {
+class Slaider : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var foodList:ArrayList<Food>
     private lateinit var foodAdapter: FoodAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_2)
+        setContentView(R.layout.activity_slaider)
 
         init()
     }

@@ -19,6 +19,7 @@ class Activity2 : AppCompatActivity() {
     private var count = 0
     private var count_need = 0
 
+
     val numbers = arrayOf(17094, 16311, 14043, 26160, 10172, 25646, 7438, 28691, 29637, 4694, 14155, 8247, 12383, 799, 304, 22393, 28175, 27144, 28077, 4013, 25912, 12860, 29054, 12750, 25957, 10840, 3242, 27811, 874, 29450, 12884, 24518, 7586, 22579, 28491, 20364, 28214, 24002, 17142, 20162)
 
     fun getRandomNumbers(numbers: Array<Int>): List<Int> {
@@ -39,6 +40,8 @@ class Activity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // массив с выбранными рецептами, которые передаем рек системе
+        val count_recommend = mutableListOf<Int>()
 
         getSupportActionBar()?.hide()
 
@@ -82,27 +85,41 @@ class Activity2 : AppCompatActivity() {
 
         count = imageList.size
 
+
+        val length = count_recommend.size
+        Log.d("MyLogMAct", "Length count_recommend $count_recommend")
+
+
         val textView = findViewById<TextView>(R.id.textsize)
-        textView.text = "Count $count_need / $count"
+        textView.text = "Count $count_need / $count, Длина $length"
 
 
-        Log.d("MyLogMAct", "Count $count_need / $count")
+
 
         val textViewString = textView.text.toString()
 
         val selectedImages: MutableList<Int> = mutableListOf()
 
         imageSlider.setItemClickListener(object : ItemClickListener {
+
             override fun onItemSelected(position: Int) {
                 val currentTime = System.currentTimeMillis()
                 if (selectedImages.contains(position)) {
+                    count_recommend.remove(randomNumbers[position])
+                    Log.d("MyLogPosition", "Remove $position")
                     selectedImages.remove(position)
+
                 } else {
+                    count_recommend.add(randomNumbers[position])
+                    Log.d("MyLogPosition", "Add $position")
                     selectedImages.add(position)
+
                 }
                 val selectedCount = selectedImages.size
                 textView.text = "Count $selectedCount / $count"
-                Log.d("MyLogMAct", "Count $selectedCount / $count")
+                Log.d("MyLogMAct", "Count $selectedCount /1 $count, $count_recommend")
+
+
             }
         })
 

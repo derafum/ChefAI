@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
         val isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
             .getBoolean("isFirstRun", true)
 

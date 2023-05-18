@@ -16,8 +16,7 @@
         <activity
             android:name=".Splash"
             android:exported="true"
-            android:theme="@style/Theme.Splash"
-            android:screenOrientation="locked">
+            android:theme="@style/Theme.Splash" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,20 +27,23 @@
 
 
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
+            android:name=".Slaider"
+            android:exported="true">
+        </activity>
 
-            android:screenOrientation="locked">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
 
         </activity>
 
 
         <activity
             android:name=".Activity2"
-            android:exported="true"
-
-            android:screenOrientation="locked">
+            android:exported="true">
         </activity>
+
 
 
     </application>
