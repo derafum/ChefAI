@@ -10,6 +10,8 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import kotlin.random.Random
 
 class Activity2 : AppCompatActivity() {
@@ -94,6 +96,12 @@ class Activity2 : AppCompatActivity() {
         textView.text = "Count $count_need / $count, Длина $length"
 
 
+        val number = 42 // Замените 42 на значение вашей переменной number
+        runPythonScript(number)
+
+        val testValue = runPythonScript2()
+        Log.d("MyLogMAct", "TestPy $testValue")
+
 
 
         val textViewString = textView.text.toString()
@@ -129,3 +137,30 @@ class Activity2 : AppCompatActivity() {
         startActivity(intent)
     }
 }
+fun runPythonScript(number: Int) {
+    val processBuilder = ProcessBuilder("python", "Business logic/Rec_system/Rec_system_new.py", number.toString())
+    val process = processBuilder.start()
+
+    val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+    val output = StringBuilder()
+
+    var line: String?
+    while (bufferedReader.readLine().also { line = it } != null) {
+        output.append(line)
+    }
+
+    val result = output.toString()
+
+    // Делайте что-то с полученным результатом из скрипта Python (например, обработка или отображение)
+}
+
+fun runPythonScript2(): Int {
+    val processBuilder = ProcessBuilder("python", "Business logic/Rec_system/Rec_system_new.py")
+    val process = processBuilder.start()
+
+    val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+    val output = bufferedReader.readLine()
+
+    return output?.toIntOrNull() ?: 0
+}
+
