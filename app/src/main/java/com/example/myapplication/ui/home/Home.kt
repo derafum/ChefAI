@@ -1,18 +1,16 @@
 package com.example.myapplication.ui.home
-import android.annotation.SuppressLint
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.databinding.FragmentHomeBinding
-import com.example.myapplication.Food
-import com.example.myapplication.FoodAdapter
 
 
 class Home : Fragment() {
@@ -74,11 +72,16 @@ class Home : Fragment() {
             Log.d("recipe", "Name2, $name, img2, $img, time2, $time")
         }
 
+
+        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val countRecommendList = sharedPreferences.getString("count_recommend", "")
+
+        if (countRecommendList != null) {
+            // Используйте countRecommendList во фрагменте (например, отобразите его или выполните другую логику)
+        }
+        Log.d("MyLogMAct", "countRecommendList, $countRecommendList")
         init()
         return binding.root
-
-
-
 
     }
 

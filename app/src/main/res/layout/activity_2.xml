@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Activity2">
 
+
     <com.denzcoskun.imageslider.ImageSlider
         android:id="@+id/slider"
         android:layout_width="330dp"

@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
+import com.example.myapplication.ui.home.Home
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.random.Random
@@ -20,6 +22,8 @@ class Activity2 : AppCompatActivity() {
     private var checkClick = false
     private var count = 0
     private var count_need = 0
+
+
 
 
     val numbers = arrayOf(17094, 16311, 14043, 26160, 10172, 25646, 7438, 28691, 29637, 4694, 14155, 8247, 12383, 799, 304, 22393, 28175, 27144, 28077, 4013, 25912, 12860, 29054, 12750, 25957, 10840, 3242, 27811, 874, 29450, 12884, 24518, 7586, 22579, 28491, 20364, 28214, 24002, 17142, 20162)
@@ -96,11 +100,18 @@ class Activity2 : AppCompatActivity() {
         textView.text = "Count $count_need / $count, Длина $length"
 
 
-        val number = 42 // Замените 42 на значение вашей переменной number
-        runPythonScript(number)
+        val str = "test"
+        val fragment = Home()
+        val bundle = Bundle()
+        bundle.putIntegerArrayList("countRecommendList", ArrayList(count_recommend))
+        fragment.arguments = bundle
 
-        val testValue = runPythonScript2()
-        Log.d("MyLogMAct", "TestPy $testValue")
+
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val stre = "test"
+        editor.putString("count_recommend", stre)
+        editor.apply()
 
 
 
@@ -138,7 +149,7 @@ class Activity2 : AppCompatActivity() {
     }
 }
 fun runPythonScript(number: Int) {
-    val processBuilder = ProcessBuilder("python", "Business logic/Rec_system/Rec_system_new.py", number.toString())
+    val processBuilder = ProcessBuilder("D:\\Python\\python.exe", "Business logic\\Rec_system\\Rec_system_new.py", number.toString())
     val process = processBuilder.start()
 
     val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
@@ -155,7 +166,7 @@ fun runPythonScript(number: Int) {
 }
 
 fun runPythonScript2(): Int {
-    val processBuilder = ProcessBuilder("python", "Business logic/Rec_system/Rec_system_new.py")
+    val processBuilder = ProcessBuilder("D:\\Python\\python.exe", "Business logic\\Rec_system\\Rec_system_new.py")
     val process = processBuilder.start()
 
     val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
@@ -163,4 +174,6 @@ fun runPythonScript2(): Int {
 
     return output?.toIntOrNull() ?: 0
 }
+
+
 
