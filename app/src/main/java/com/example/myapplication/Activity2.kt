@@ -97,21 +97,22 @@ class Activity2 : AppCompatActivity() {
 
 
         val textView = findViewById<TextView>(R.id.textsize)
-        textView.text = "Count $count_need / $count, Длина $length"
+        textView.text = "Count $count_need / $count"
 
 
-        val str = "test"
-        val fragment = Home()
-        val bundle = Bundle()
-        bundle.putIntegerArrayList("countRecommendList", ArrayList(count_recommend))
-        fragment.arguments = bundle
 
 
-        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("len_count_recommend", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        val stre = "test"
-        editor.putString("count_recommend", stre)
+        editor.putString("count_recommend", length.toString())
         editor.apply()
+
+
+
+
+
+
+
 
 
 
@@ -139,6 +140,24 @@ class Activity2 : AppCompatActivity() {
                 Log.d("MyLogMAct", "Count $selectedCount /1 $count, $count_recommend")
 
 
+
+
+                val sharedPreferences2 = getSharedPreferences("length", Context.MODE_PRIVATE)
+                val editor2 = sharedPreferences2.edit()
+                editor2.putInt("len", selectedCount)
+                editor2.apply()
+
+
+                for (i in 0 until selectedCount) {
+                    // Действия, которые нужно выполнить с каждым элементом массива
+
+                    val sharedPreferences_elements = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val editors = sharedPreferences_elements.edit()
+                    editors.putInt("count_recommend$i", count_recommend[i])
+                    editors.apply()
+                }
+
+
             }
         })
 
@@ -148,32 +167,7 @@ class Activity2 : AppCompatActivity() {
         startActivity(intent)
     }
 }
-fun runPythonScript(number: Int) {
-    val processBuilder = ProcessBuilder("D:\\Python\\python.exe", "Business logic\\Rec_system\\Rec_system_new.py", number.toString())
-    val process = processBuilder.start()
 
-    val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-    val output = StringBuilder()
-
-    var line: String?
-    while (bufferedReader.readLine().also { line = it } != null) {
-        output.append(line)
-    }
-
-    val result = output.toString()
-
-    // Делайте что-то с полученным результатом из скрипта Python (например, обработка или отображение)
-}
-
-fun runPythonScript2(): Int {
-    val processBuilder = ProcessBuilder("D:\\Python\\python.exe", "Business logic\\Rec_system\\Rec_system_new.py")
-    val process = processBuilder.start()
-
-    val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-    val output = bufferedReader.readLine()
-
-    return output?.toIntOrNull() ?: 0
-}
 
 
 

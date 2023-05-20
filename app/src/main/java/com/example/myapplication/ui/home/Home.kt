@@ -38,7 +38,7 @@ class Home : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
 
-
+        val count_recommend = mutableListOf<Int>()
         val dbHelper = DatabaseHelper(requireActivity())
         var offset = 0
         var recipes = dbHelper.getTopRecipesByLikes(10, offset)
@@ -73,13 +73,24 @@ class Home : Fragment() {
         }
 
 
-        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val countRecommendList = sharedPreferences.getString("count_recommend", "")
+        val sharedPreferences2 =  context?.getSharedPreferences("length", Context.MODE_PRIVATE)
+        val len_count_recommend = sharedPreferences2?.getInt("len", 0)
 
-        if (countRecommendList != null) {
-            // Используйте countRecommendList во фрагменте (например, отобразите его или выполните другую логику)
+        val sharedPreferences = context?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val countRecommendSet = sharedPreferences?.getString("test", "")
+
+        Log.d("MyLogMAct", "countRecommendLststring, $countRecommendSet")
+
+       for (i in 0 until len_count_recommend!!) {
+
+            val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val countRecommendList = sharedPreferences.getInt("count_recommend$i", 0)
+
+            count_recommend.add(countRecommendList)
         }
-        Log.d("MyLogMAct", "countRecommendList, $countRecommendList")
+
+        Log.d("MyLogMAct", "len_count_recommend, $len_count_recommend")
+        Log.d("MyLogMAct", "countRecommendList, $count_recommend")
         init()
         return binding.root
 
