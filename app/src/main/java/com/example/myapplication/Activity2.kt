@@ -11,9 +11,7 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
-import com.example.myapplication.ui.home.Home
-import java.io.BufferedReader
-import java.io.InputStreamReader
+
 import kotlin.random.Random
 
 class Activity2 : AppCompatActivity() {

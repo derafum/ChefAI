@@ -1,4 +1,5 @@
 package com.example.myapplication.ui.home
+import FoodAdapter
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -22,13 +23,11 @@ class Home : Fragment() {
     private lateinit var viewModel: HomeViewModel
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var foodList:ArrayList<Food>
+    private lateinit var foodList: ArrayList<Food>
     private lateinit var foodAdapter: FoodAdapter
 
 
     private lateinit var binding: FragmentHomeBinding
-
-
 
 
     override fun onCreateView(
@@ -73,7 +72,7 @@ class Home : Fragment() {
         }
 
 
-        val sharedPreferences2 =  context?.getSharedPreferences("length", Context.MODE_PRIVATE)
+        val sharedPreferences2 = context?.getSharedPreferences("length", Context.MODE_PRIVATE)
         val len_count_recommend = sharedPreferences2?.getInt("len", 0)
 
         val sharedPreferences = context?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -81,9 +80,10 @@ class Home : Fragment() {
 
         Log.d("MyLogMAct", "countRecommendLststring, $countRecommendSet")
 
-       for (i in 0 until len_count_recommend!!) {
+        for (i in 0 until len_count_recommend!!) {
 
-            val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val sharedPreferences =
+                requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
             val countRecommendList = sharedPreferences.getInt("count_recommend$i", 0)
 
             count_recommend.add(countRecommendList)
@@ -91,7 +91,33 @@ class Home : Fragment() {
 
         Log.d("MyLogMAct", "len_count_recommend, $len_count_recommend")
         Log.d("MyLogMAct", "countRecommendList, $count_recommend")
-        init()
+
+
+
+        recyclerView = binding.RecyclerView
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
+        foodList = ArrayList()
+
+
+        for (i in count_recommend){
+            val result = dbHelper.getRecipeUrlAndImgByNumber(i)
+            if (result != null) {
+                val (title, img) = result
+                foodList.add(Food(img, title))
+
+            }
+
+
+        }
+
+
+
+
+        foodAdapter = FoodAdapter(foodList)
+        recyclerView.adapter = foodAdapter
+
+
         return binding.root
 
     }
@@ -103,29 +129,17 @@ class Home : Fragment() {
     }
 
 
-
     private fun init() {
         recyclerView = binding.RecyclerView
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         foodList = ArrayList()
-        addDataToList()
+
+
+
         foodAdapter = FoodAdapter(foodList)
         recyclerView.adapter = foodAdapter
     }
 
-
-
-
-
-    private fun addDataToList(){
-
-        foodList.add(Food(R.drawable.recipe1, "Paneer Butter"))
-        foodList.add(Food(R.drawable.recipe2, "Pizza"))
-        foodList.add(Food(R.drawable.recipe3, "Dosa"))
-        foodList.add(Food(R.drawable.recipe4, "Veg Biryani"))
-        foodList.add(Food(R.drawable.recipe5, "Pasta"))
-        foodList.add(Food(R.drawable.recipe6, "Noodles"))
-    }
 
 }

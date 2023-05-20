@@ -56,7 +56,6 @@ class DatabaseHelper(private val context: Context) :
     }
 
 
-
     override fun onCreate(db: SQLiteDatabase) {
         // Database creation not needed here since it's already created from the assets
     }

@@ -1,10 +1,10 @@
 package com.example.myapplication
 
+import FoodAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.FoodAdapter
 
 class Activity3 : AppCompatActivity() {
 
@@ -26,13 +26,13 @@ class Activity3 : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         foodList = ArrayList()
 
-        addDataToList()
+       // addDataToList()
 
 
         foodAdapter = FoodAdapter(foodList)
         recyclerView.adapter = foodAdapter
     }
-
+/*
     private fun addDataToList(){
 
         foodList.add(Food(R.drawable.recipe1, "Paneer Butter"))
@@ -41,5 +41,5 @@ class Activity3 : AppCompatActivity() {
         foodList.add(Food(R.drawable.recipe4, "Veg Biryani"))
         foodList.add(Food(R.drawable.recipe5, "Pasta"))
         foodList.add(Food(R.drawable.recipe6, "Noodles"))
-    }
+    }*/
 }
