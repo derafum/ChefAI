@@ -1,6 +1,6 @@
 package com.example.myapplication
 
-import Parsdate
+
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,8 +12,7 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,11 +20,6 @@ import kotlin.random.Random
 import java.net.URL
 
 
-import kotlinx.coroutines.runBlocking
-
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
 class Activity2 : AppCompatActivity() {
     private var lastClickTime: Long = 0
     private var isButtonSelected = false // Flag to track button selection
@@ -121,7 +115,6 @@ class Activity2 : AppCompatActivity() {
 
 
         val url = "https://www.youtube.com/"
-        sendGetRequest(url)
 
 
 
@@ -167,14 +160,8 @@ class Activity2 : AppCompatActivity() {
                     editors.putInt("count_recommend$i", count_recommend[i])
                     editors.apply()
                 }
-
-
-
-
-
             }
         })
-
     }
     fun goToAnActivity(view: View?) {
         val intent = Intent(this, MainActivity::class.java)
@@ -183,10 +170,5 @@ class Activity2 : AppCompatActivity() {
 }
 
 
-fun sendGetRequest(url: String) {
-    GlobalScope.launch(Dispatchers.IO) {
-        val response = URL(url).readText()
-        Log.d("MyLogMAct", "response $response")
-    }
-}
+
 
