@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ChefAI</string>
+    <string name="home">Главная</string>
+    <string name="search">Поиск</string>
+    <string name="analyze">Анализ</string>
+    <string name="favourites">Избранное</string>
+    <string name="profile">Профиль</string>
 </resources>

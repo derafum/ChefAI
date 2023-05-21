@@ -6,17 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.myapplication.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,21 +36,20 @@ class MainActivity : AppCompatActivity() {
     private var index = 0
 
 
-/*
-    private fun init2() = with(binding){
-        reView.layoutManager = LinearLayoutManager(this@MainActivity)
-        reView.adapter = adapter
-        for (i in 1..4){
-            val recipe = Recipe(imageIdList[i], "Recipe $i", "Time: 10 минут" )
-            adapter.addRecipe(recipe)
+    /*
+        private fun init2() = with(binding){
+            reView.layoutManager = LinearLayoutManager(this@MainActivity)
+            reView.adapter = adapter
+            for (i in 1..4){
+                val recipe = Recipe(imageIdList[i], "Recipe $i", "Time: 10 минут" )
+                adapter.addRecipe(recipe)
+            }
         }
-    }
 
-*/
+    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
 
         val isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
@@ -107,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_search,
-                R.id.navigation_analize,
+                R.id.navigation_analyze,
                 R.id.navigation_likes,
                 R.id.navigation_profile
             )

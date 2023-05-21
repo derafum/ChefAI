@@ -1,4 +1,5 @@
 package com.example.myapplication.ui.home
+
 import FoodAdapter
 import android.content.Context
 import android.os.Bundle
@@ -10,11 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.chaquo.python.PyObject
-import com.example.myapplication.*
-import com.example.myapplication.databinding.FragmentHomeBinding
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.example.myapplication.DatabaseHelper
+import com.example.myapplication.Food
+import com.example.myapplication.Recipe
+import com.example.myapplication.RecipeAdapter
+import com.example.myapplication.databinding.FragmentHomeBinding
 
 class Home : Fragment() {
 
@@ -101,7 +104,7 @@ class Home : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         foodList = ArrayList()
 
-        if (! Python.isStarted()) {
+        if (!Python.isStarted()) {
             Python.start(AndroidPlatform(requireActivity()));
         }
 
@@ -112,7 +115,7 @@ class Home : Fragment() {
 // Чтение содержимого скрипта
 
 
-        for (number in count_recommend){
+        for (number in count_recommend) {
 
             val getNumberFunction = module.callAttr("rec_system", number)
             val rec_receipe = getNumberFunction.asList()
@@ -137,7 +140,7 @@ class Home : Fragment() {
 
         }
 
-        val getNumberFunction = module.callAttr("rec_system",10)
+        val getNumberFunction = module.callAttr("rec_system", 10)
         val number = getNumberFunction
 
 

@@ -1,6 +1,6 @@
 package com.example.myapplication
 
-import Parsdate
+
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,20 +12,12 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 import java.net.URL
+import kotlin.random.Random
 
-
-import kotlinx.coroutines.runBlocking
-
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
 class Activity2 : AppCompatActivity() {
     private var lastClickTime: Long = 0
     private var isButtonSelected = false // Flag to track button selection
@@ -34,9 +26,48 @@ class Activity2 : AppCompatActivity() {
     private var count_need = 0
 
 
-
-
-    val numbers = arrayOf(17094, 16311, 14043, 26160, 10172, 25646, 7438, 28691, 29637, 4694, 14155, 8247, 12383, 799, 304, 22393, 28175, 27144, 28077, 4013, 25912, 12860, 29054, 12750, 25957, 10840, 3242, 27811, 874, 29450, 12884, 24518, 7586, 22579, 28491, 20364, 28214, 24002, 17142, 20162)
+    val numbers = arrayOf(
+        17094,
+        16311,
+        14043,
+        26160,
+        10172,
+        25646,
+        7438,
+        28691,
+        29637,
+        4694,
+        14155,
+        8247,
+        12383,
+        799,
+        304,
+        22393,
+        28175,
+        27144,
+        28077,
+        4013,
+        25912,
+        12860,
+        29054,
+        12750,
+        25957,
+        10840,
+        3242,
+        27811,
+        874,
+        29450,
+        12884,
+        24518,
+        7586,
+        22579,
+        28491,
+        20364,
+        28214,
+        24002,
+        17142,
+        20162
+    )
 
     fun getRandomNumbers(numbers: Array<Int>): List<Int> {
         val randomNumbers = mutableListOf<Int>()
@@ -50,7 +81,6 @@ class Activity2 : AppCompatActivity() {
 
         return randomNumbers
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +101,7 @@ class Activity2 : AppCompatActivity() {
 
         val imageList: MutableList<SlideModel> = ArrayList() // Create image list
 
-        for (i in randomNumbers){
+        for (i in randomNumbers) {
             val result = dbHelper.getRecipeUrlAndImgByNumber(i)
             if (result != null) {
                 val (title, img) = result
@@ -110,21 +140,14 @@ class Activity2 : AppCompatActivity() {
         textView.text = "Count $count_need / $count"
 
 
-
-
         val sharedPreferences = getSharedPreferences("len_count_recommend", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("count_recommend", length.toString())
         editor.apply()
 
 
-
-
         val url = "https://www.youtube.com/"
         sendGetRequest(url)
-
-
-
 
 
         val textViewString = textView.text.toString()
@@ -151,8 +174,6 @@ class Activity2 : AppCompatActivity() {
                 Log.d("MyLogMAct", "Count $selectedCount /1 $count, $count_recommend")
 
 
-
-
                 val sharedPreferences2 = getSharedPreferences("length", Context.MODE_PRIVATE)
                 val editor2 = sharedPreferences2.edit()
                 editor2.putInt("len", selectedCount)
@@ -162,20 +183,19 @@ class Activity2 : AppCompatActivity() {
                 for (i in 0 until selectedCount) {
                     // Действия, которые нужно выполнить с каждым элементом массива
 
-                    val sharedPreferences_elements = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val sharedPreferences_elements =
+                        getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                     val editors = sharedPreferences_elements.edit()
                     editors.putInt("count_recommend$i", count_recommend[i])
                     editors.apply()
                 }
 
 
-
-
-
             }
         })
 
     }
+
     fun goToAnActivity(view: View?) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
