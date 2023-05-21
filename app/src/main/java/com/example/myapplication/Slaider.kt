@@ -6,14 +6,14 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class Activity3 : AppCompatActivity() {
+class Slaider : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var foodList:ArrayList<Food>
     private lateinit var foodAdapter: FoodAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_2)
+        setContentView(R.layout.activity_slaider)
 
         init()
     }
@@ -32,8 +32,8 @@ class Activity3 : AppCompatActivity() {
         foodAdapter = FoodAdapter(foodList)
         recyclerView.adapter = foodAdapter
     }
-/*
-    private fun addDataToList(){
+
+ /*   private fun addDataToList(){
 
         foodList.add(Food(R.drawable.recipe1, "Paneer Butter"))
         foodList.add(Food(R.drawable.recipe2, "Pizza"))

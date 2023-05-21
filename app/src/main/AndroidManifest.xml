@@ -27,6 +27,12 @@
 
 
         <activity
+            android:name=".Slaider"
+            android:exported="true">
+        </activity>
+
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
 
@@ -37,6 +43,7 @@
             android:name=".Activity2"
             android:exported="true">
         </activity>
+
 
 
     </application>

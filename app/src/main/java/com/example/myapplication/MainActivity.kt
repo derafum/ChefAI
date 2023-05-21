@@ -8,11 +8,22 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.ActivityMainBinding
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.setupActionBarWithNavController
+
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    private val adapter = RecipeAdapter()
+
+
+    private var adapter = RecipeAdapter()
     private val imageIdList = listOf(
         R.drawable.recipe1,
         R.drawable.recipe2,
@@ -20,15 +31,31 @@ class MainActivity : AppCompatActivity() {
         R.drawable.recipe4,
         R.drawable.recipe5,
         R.drawable.recipe6,
+        R.drawable.recipe6,
+        R.drawable.recipe6,
+        R.drawable.recipe6,
+        R.drawable.recipe6
+
     )
+
     private var index = 0
 
 
+/*
+    private fun init2() = with(binding){
+        reView.layoutManager = LinearLayoutManager(this@MainActivity)
+        reView.adapter = adapter
+        for (i in 1..4){
+            val recipe = Recipe(imageIdList[i], "Recipe $i", "Time: 10 минут" )
+            adapter.addRecipe(recipe)
+        }
+    }
 
-
+*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
 
         val isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
@@ -48,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        /*
         binding.bNav.selectedItemId = R.id.item1
         binding.bNav.setOnNavigationItemSelectedListener{
             when(it.itemId){
@@ -69,7 +97,26 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        init()
+         */
+
+        val navView: BottomNavigationView = binding.bNav
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home,
+                R.id.navigation_search,
+                R.id.navigation_analize,
+                R.id.navigation_likes,
+                R.id.navigation_profile
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+
+
         Log.d("MyLogMAct", "OnCreate")
     }
 
@@ -107,15 +154,5 @@ class MainActivity : AppCompatActivity() {
         super.onRestart()
         Log.d("MyLogMAct", "onRestart")
     }
-    private fun init() = with(binding){
-        reView.layoutManager = LinearLayoutManager(this@MainActivity)
-        reView.adapter = adapter
-        buttonAdd.setOnClickListener{
-            if(index > 4) index = 0
-            val recipe = Recipe(imageIdList[index], "Recipe $index", "Time: 10 минут" )
-            adapter.addRecipe(recipe)
-            index++
 
-        }
-    }
 }
