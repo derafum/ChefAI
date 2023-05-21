@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.chaquo.python.PyObject
 import com.example.myapplication.*
 import com.example.myapplication.databinding.FragmentHomeBinding
-
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 
 class Home : Fragment() {
 
@@ -99,17 +101,46 @@ class Home : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         foodList = ArrayList()
 
+        if (! Python.isStarted()) {
+            Python.start(AndroidPlatform(requireActivity()));
+        }
 
-        for (i in count_recommend){
-            val result = dbHelper.getRecipeUrlAndImgByNumber(i)
-            if (result != null) {
-                val (title, img) = result
-                foodList.add(Food(img, title))
+        val python = Python.getInstance()
+        val module = python.getModule("Rec_system_new")
 
+
+// Чтение содержимого скрипта
+
+
+        for (number in count_recommend){
+
+            val getNumberFunction = module.callAttr("rec_system", number)
+            val rec_receipe = getNumberFunction.asList()
+
+            for (receipeEntry in rec_receipe) {
+                val receipe = receipeEntry.toInt()
+                val result = dbHelper.getRecipeUrlAndImgByNumber(receipe)
+                if (result != null) {
+                    val (title, img) = result
+                    foodList.add(Food(img, title))
+                }
             }
 
 
+
+
+
+
+
+
+            Log.d("MyLogMAct", "rec_receipe, $rec_receipe")
+
         }
+
+        val getNumberFunction = module.callAttr("rec_system",10)
+        val number = getNumberFunction
+
+
 
 
 

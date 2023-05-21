@@ -26,7 +26,10 @@ def rec_system(number_recomend, my_data=None):
         filename = join(dirname(__file__), "data2.txt")
         my_data = eval(open(filename, 'r').read())
     recommend_receipt = recommend(my_data, number_recomend)
-    return recommend_receipt
+    number = []
+    for i in recommend_receipt:
+        number.append((i[1]))
+    return number
 
 
 
