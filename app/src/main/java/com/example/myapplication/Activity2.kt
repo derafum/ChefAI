@@ -146,8 +146,6 @@ class Activity2 : AppCompatActivity() {
         editor.apply()
 
 
-        val url = "https://www.youtube.com/"
-        sendGetRequest(url)
 
 
         val textViewString = textView.text.toString()
@@ -203,10 +201,5 @@ class Activity2 : AppCompatActivity() {
 }
 
 
-fun sendGetRequest(url: String) {
-    GlobalScope.launch(Dispatchers.IO) {
-        val response = URL(url).readText()
-        Log.d("MyLogMAct", "response $response")
-    }
-}
+
 
