@@ -21,20 +21,22 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
+import com.example.myapplication.databinding.FragmentAnalizeBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class Analize : Fragment() {
-    private lateinit var viewBinding: AnalizeViewModel
+    private lateinit var viewModel: AnalizeViewModel
+
+    private lateinit var binding: FragmentAnalizeBinding
 
     private var imageCapture: ImageCapture? = null
 
     private lateinit var cameraExecutor: ExecutorService
 
     companion object {
-        fun newInstance() = Analize()
         private const val TAG = "CameraXApp"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private val REQUIRED_PERMISSIONS =
@@ -54,6 +56,7 @@ class Analize : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreate(savedInstanceState)
+        binding = FragmentAnalizeBinding.inflate(inflater, container, false)
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -63,7 +66,7 @@ class Analize : Fragment() {
         }
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
+        binding.imageCaptureButton.setOnClickListener { takePhoto() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         return inflater.inflate(R.layout.fragment_analize, container, false)
@@ -72,7 +75,7 @@ class Analize : Fragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewBinding = ViewModelProvider(this)[AnalizeViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AnalizeViewModel::class.java]
         // TODO: Use the viewBinding
 
     }
@@ -132,7 +135,7 @@ class Analize : Fragment() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
+                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
             imageCapture = ImageCapture.Builder()
