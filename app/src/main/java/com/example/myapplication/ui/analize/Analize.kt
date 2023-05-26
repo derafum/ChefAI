@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -20,6 +22,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -31,6 +34,9 @@ class Analize : Fragment() {
     private lateinit var binding: FragmentAnalizeBinding
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var helloTextView: TextView
+    private lateinit var photoButton: Button
+    private lateinit var backButton: Button
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -51,6 +57,26 @@ class Analize : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[AnalizeViewModel::class.java]
+
+        helloTextView = binding.helloTextView
+        photoButton = binding.imageCaptureButton
+        backButton = binding.backButton
+
+        binding.imageCaptureButton.setOnClickListener {
+            takePhoto()
+            binding.viewFinder.visibility = View.GONE
+            helloTextView.visibility = View.VISIBLE
+            photoButton.visibility = View.GONE
+            backButton.visibility = View.VISIBLE
+        }
+
+        backButton.setOnClickListener {
+            binding.viewFinder.visibility = View.VISIBLE
+            helloTextView.visibility = View.INVISIBLE
+            photoButton.visibility = View.VISIBLE
+            backButton.visibility = View.GONE
+        }
+
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         // Request camera permissions
@@ -59,9 +85,6 @@ class Analize : Fragment() {
         } else {
             requestPermissions()
         }
-
-        // Set up the listeners for take photo and video capture buttons
-        binding.imageCaptureButton.setOnClickListener { takePhoto() }
     }
 
     override fun onDestroyView() {
@@ -70,8 +93,6 @@ class Analize : Fragment() {
     }
 
     private fun takePhoto() {
-
-
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -107,7 +128,12 @@ class Analize : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
                     Log.d(TAG, msg)
+
+                    binding.viewFinder.visibility = View.GONE
+                    helloTextView.visibility = View.VISIBLE
+                    photoButton.visibility = View.GONE
                 }
             }
         )
