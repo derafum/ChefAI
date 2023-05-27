@@ -1,8 +1,9 @@
 package com.example.myapplication.ui.analize
-
 import android.Manifest
 import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,8 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -34,9 +35,7 @@ class Analize : Fragment() {
     private lateinit var binding: FragmentAnalizeBinding
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
-    private lateinit var helloTextView: TextView
-    private lateinit var photoButton: Button
-    private lateinit var backButton: Button
+    private lateinit var capturedImageView: ImageView
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -57,34 +56,17 @@ class Analize : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[AnalizeViewModel::class.java]
-
-        helloTextView = binding.helloTextView
-        photoButton = binding.imageCaptureButton
-        backButton = binding.backButton
-
-        binding.imageCaptureButton.setOnClickListener {
-            takePhoto()
-            binding.viewFinder.visibility = View.GONE
-            helloTextView.visibility = View.VISIBLE
-            photoButton.visibility = View.GONE
-            backButton.visibility = View.VISIBLE
-        }
-
-        backButton.setOnClickListener {
-            binding.viewFinder.visibility = View.VISIBLE
-            helloTextView.visibility = View.INVISIBLE
-            photoButton.visibility = View.VISIBLE
-            backButton.visibility = View.GONE
-        }
-
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Request camera permissions
+        capturedImageView = view.findViewById(R.id.capturedImageView)
+
         if (allPermissionsGranted()) {
             startCamera()
         } else {
             requestPermissions()
         }
+
+        binding.imageCaptureButton.setOnClickListener { takePhoto() }
     }
 
     override fun onDestroyView() {
@@ -93,10 +75,8 @@ class Analize : Fragment() {
     }
 
     private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time stamped name and MediaStore entry.
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
@@ -107,7 +87,6 @@ class Analize : Fragment() {
             }
         }
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(
                 requireContext().contentResolver,
@@ -116,7 +95,6 @@ class Analize : Fragment() {
             )
             .build()
 
-        // Set up image capture listener, which is triggered after photo has been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()),
@@ -126,27 +104,30 @@ class Analize : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    val savedUri = output.savedUri ?: return
+                    val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
                     Log.d(TAG, msg)
 
-                    binding.viewFinder.visibility = View.GONE
-                    helloTextView.visibility = View.VISIBLE
-                    photoButton.visibility = View.GONE
+                    displayCapturedPhoto(savedUri)
                 }
             }
         )
+    }
+
+    private fun displayCapturedPhoto(imageUri: Uri) {
+        val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        capturedImageView.setImageBitmap(bitmap)
     }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
@@ -156,22 +137,16 @@ class Analize : Fragment() {
             imageCapture = ImageCapture.Builder()
                 .build()
 
-            // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
-
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
@@ -189,7 +164,6 @@ class Analize : Fragment() {
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            // Handle Permission granted/rejected
             var permissionGranted = true
             permissions.entries.forEach {
                 if (it.key in REQUIRED_PERMISSIONS && it.value == false)
