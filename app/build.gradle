@@ -36,7 +36,7 @@ android {
             version "3.10"
         }
         python {
-            buildPython "venv/Scripts/python.exe"
+            buildPython "get_classes_new_venv/Scripts/python.exe"
         }
 
 
