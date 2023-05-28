@@ -1,4 +1,5 @@
 package com.example.myapplication.ui.analize
+
 import android.Manifest
 import android.content.ContentValues
 import android.content.pm.PackageManager
@@ -14,19 +15,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
+import com.example.myapplication.ui.analize.AnalizeViewModel
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -111,6 +114,7 @@ class Analize : Fragment() {
                     Log.d(TAG, msg)
 
                     displayCapturedPhoto(savedUri)
+                    scanQRCode(savedUri)
                 }
             }
         )
@@ -120,6 +124,27 @@ class Analize : Fragment() {
         val inputStream = requireContext().contentResolver.openInputStream(imageUri)
         val bitmap = BitmapFactory.decodeStream(inputStream)
         capturedImageView.setImageBitmap(bitmap)
+    }
+
+    private fun scanQRCode(imageUri: Uri) {
+        val image = InputImage.fromFilePath(requireContext(), imageUri)
+
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+
+        val scanner = BarcodeScanning.getClient(options)
+
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                for (barcode in barcodes) {
+                    val rawValue = barcode.rawValue
+                    val valueType = barcode.valueType
+                    Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
+                }
+            }
+            .addOnFailureListener { e -> Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
+            }
     }
 
     private fun startCamera() {
