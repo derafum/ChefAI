@@ -1,5 +1,8 @@
 package com.example.myapplication.ui.analize
+
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -15,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -26,16 +30,23 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
-import com.example.myapplication.Analysis
-import com.google.android.gms.common.util.DataUtils.loadImageBytes
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
+import android.util.Base64
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import java.io.IOException
 
 class Analize : Fragment() {
     private lateinit var viewModel: AnalizeViewModel
@@ -110,6 +121,7 @@ class Analize : Fragment() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
+                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri ?: return
                     val msg = "Photo capture succeeded: $savedUri"
@@ -119,7 +131,7 @@ class Analize : Fragment() {
 
                     displayCapturedPhoto(savedUri)
                     scanQRCode(savedUri)
-                    analysis(savedUri)
+                    analysis(savedUri, requireContext().contentResolver)
                 }
             }
         )
@@ -148,9 +160,11 @@ class Analize : Fragment() {
                     Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
                 }
             }
-            .addOnFailureListener { e -> Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
+            .addOnFailureListener { e ->
+                Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
             }
     }
+
     fun uriToBitmap(uri: Uri): Bitmap {
         var inputStream: InputStream? = null
         return try {
@@ -170,12 +184,71 @@ class Analize : Fragment() {
         return outputStream.toByteArray()
     }
 
-    private fun analysis(imageUri: Uri) {
-        val bitmap = uriToBitmap(imageUri)
-        val imageBytes = bitmapToByteArray(bitmap)
-        val object = ObjectDetectionModel()
-        val prediction = objectDetectionModel.get_predict(imageBytes)
-        Log.d(TAG, "prediction: $prediction")
+
+    /*
+          private fun analysis(imageUri: Uri) {
+              try {
+                  Log.d(TAG, "imageUri00: $imageUri")
+                  if (!Python.isStarted()) {
+                      Python.start(AndroidPlatform(requireActivity()))
+                  }
+                  Log.d(TAG, "imageUri0: $imageUri")
+                  val python = Python.getInstance()
+                  Log.d(TAG, "imageUri1: $imageUri")
+                  val module = python.getModule("analysis_img")
+                  Log.d(TAG, "imageUri2: $imageUri")
+                  val predict = module.callAttr("main", imageUri)
+                  Log.d(TAG, "predict: $predict")
+              } catch (e: Exception) {
+                  Log.e(TAG, "Python script execution failed: ${e.message}", e)
+              }
+          }
+      */
+
+
+
+    fun performPostRequest(url: String, requestBody: RequestBody, callback: Callback) {
+        val client = OkHttpClient()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(callback)
+    }
+
+    @SuppressLint("Recycle")
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun analysis(imageUri: Uri, contentResolver: ContentResolver) {
+        val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
+
+        val inputStream = contentResolver.openInputStream(imageUri)
+        val imageBytes = inputStream?.readBytes()
+
+        val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+        val client = OkHttpClient()
+        val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
+
+        val callback = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Обработка ошибок при выполнении запроса
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
+                // Обработка ответа от сервера
+                // responseBody содержит ответ от сервера в виде строки
+            }
+        }
+
+
+        performPostRequest(apiUrl, requestBody, callback)
+
+
     }
 
 

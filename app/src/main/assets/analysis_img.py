@@ -4,6 +4,9 @@ from roboflow.models.object_detection import ObjectDetectionModel
 
 
 def main(img):
+    api_key = "hzA1SfCPcpXoK4L5LAKe"  # gitignore
+    id_ = "mortuus-stellaris-raxs6/-object-detection-pukbl/3"  # gitignore
+    version = 3  # gitignore
     # image_data = open('test_img.jpg', mode='rb').read() # test
     image_data = img
     model = Model(api_key=api_key, id_=id_, version=version)
@@ -31,6 +34,3 @@ class Model(ObjectDetectionModel):
 """if __name__ == '__main__':
     main()"""
 
-api_key = "hzA1SfCPcpXoK4L5LAKe"  # gitignore
-id_ = "mortuus-stellaris-raxs6/-object-detection-pukbl/3"  # gitignore
-version = 3  # gitignore
