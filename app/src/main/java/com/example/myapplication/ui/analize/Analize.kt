@@ -1,8 +1,8 @@
 package com.example.myapplication.ui.analize
-
 import android.Manifest
 import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -22,12 +22,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
-import com.example.myapplication.ui.analize.AnalizeViewModel
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import java.io.File
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
+import com.example.myapplication.Analysis
+import com.google.android.gms.common.util.DataUtils.loadImageBytes
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -115,6 +119,7 @@ class Analize : Fragment() {
 
                     displayCapturedPhoto(savedUri)
                     scanQRCode(savedUri)
+                    analysis(savedUri)
                 }
             }
         )
@@ -146,6 +151,33 @@ class Analize : Fragment() {
             .addOnFailureListener { e -> Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
             }
     }
+    fun uriToBitmap(uri: Uri): Bitmap {
+        var inputStream: InputStream? = null
+        return try {
+            inputStream = requireContext().contentResolver.openInputStream(uri)
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
+        } finally {
+            inputStream?.close()
+        }
+    }
+
+    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        return outputStream.toByteArray()
+    }
+
+    private fun analysis(imageUri: Uri) {
+        val bitmap = uriToBitmap(imageUri)
+        val imageBytes = bitmapToByteArray(bitmap)
+        val object = ObjectDetectionModel()
+        val prediction = objectDetectionModel.get_predict(imageBytes)
+        Log.d(TAG, "prediction: $prediction")
+    }
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
