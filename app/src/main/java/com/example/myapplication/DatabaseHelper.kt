@@ -84,6 +84,39 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
+
+
+    @SuppressLint("Range")
+    fun getRecipeNumbersByIngredients(ingredients: String): List<Int> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val recipeNumbers = mutableListOf<Int>()
+
+        try {
+            //al query1 = "SELECT $COLUMN_NUMBER FROM $TABLE_NAME WHERE $COLUMN_NAME IN ($placeholders)"
+
+            val query = "SELECT * FROM recipes WHERE lower(ingredients) like '%$ingredients%' ORDER BY likes DESC LIMIT 10"
+            cursor = db.rawQuery(query, arrayOfNulls(0))
+
+            while (cursor.moveToNext()) {
+                val number = cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+                recipeNumbers.add(number)
+            }
+        } catch (e: SQLiteException) {
+            // Обрабатываем исключение
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return recipeNumbers
+    }
+
+
+
+
+
+
     data class Recipe_bd(val name: String, val img: String, val time: String)
 
     @SuppressLint("Range")

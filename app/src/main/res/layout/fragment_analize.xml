@@ -45,5 +45,12 @@
             android:text="Сканировать продукты" />
 
 
+        <TextView
+            android:id="@+id/responseTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="416dp"
+            android:text="Response Body:"
+            android:textSize="16sp" />
 
 </RelativeLayout>

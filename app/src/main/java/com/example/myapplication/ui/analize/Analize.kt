@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 import android.util.Base64
+import android.widget.TextView
+import com.example.myapplication.DatabaseHelper
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -47,6 +49,8 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
+import org.json.JSONObject
+
 
 class Analize : Fragment() {
     private lateinit var viewModel: AnalizeViewModel
@@ -77,6 +81,7 @@ class Analize : Fragment() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         capturedImageView = view.findViewById(R.id.capturedImageView)
+
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -242,8 +247,25 @@ class Analize : Fragment() {
                 Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
                 // Обработка ответа от сервера
                 // responseBody содержит ответ от сервера в виде строки
+                activity?.runOnUiThread {
+                    // Найти TextView по его ID
+                    val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
+                    // Установить значение responseBody в текстовое поле
+                    val predict_product = responseBody?.let { parseClasses(it) }
+
+                    val dbHelper = DatabaseHelper(requireActivity())
+
+                    if (predict_product != null) {
+                        for (number in predict_product) {
+                            val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
+                            Log.d(TAG, "answer: $recipeNumbers")
+                            responseTextView.text = "Response Body: $predict_product, $recipeNumbers"
+                        }
+                    }
+                }
             }
         }
+
 
 
         performPostRequest(apiUrl, requestBody, callback)
@@ -288,6 +310,66 @@ class Analize : Fragment() {
         ContextCompat.checkSelfPermission(
             requireContext(), it
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun parseClasses(jsonText: String): MutableList<String> {
+        val classes = mutableListOf<String>()
+
+        try {
+            val json = JSONObject(jsonText)
+            val predictionsArray = json.getJSONArray("predictions")
+
+            val translations = mapOf(
+                "milk" to "молоко",
+                "peach" to "персик",
+                "orange" to "апельсин",
+                "carrot" to "морковь",
+                "mandarin" to "мандарин",
+                "tomato" to "помидор",
+                "bell pepper" to "перец",
+                "eggplant" to "баклажан",
+                "potato" to "картофель",
+                "chili" to "перец чили",
+                "peppers" to "перец",
+                "egg" to "яйцо",
+                "apple" to "яблоко",
+                "garlic" to "чеснок",
+                "cucumber" to "огурец",
+                "lemon" to "лимон",
+                "bulb onion" to "репчатый лук",
+                "banana" to "банан",
+                "pear" to "груша",
+                "zucchini" to "цукини",
+                "cabbage" to "капуста",
+                "strawberry" to "клубника",
+                "chicken meat" to "куриц",
+                "pork" to "свинина",
+                "cherry" to "вишня",
+                "grape" to "виноград",
+                "green onion" to "зеленый лук",
+                "mushrooms" to "грибы",
+                "beef" to "говядина"
+
+            )
+            val uniqueClasses = mutableSetOf<String>()
+
+            for (i in 0 until predictionsArray.length()) {
+                val prediction = predictionsArray.getJSONObject(i)
+                val className = prediction.getString("class")
+                val translatedClassName = translations[className]
+                translatedClassName?.let {
+                    if (!uniqueClasses.contains(it)) {
+                        uniqueClasses.add(it)
+                        classes.add(it)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+        return classes
     }
 
     private val activityResultLauncher =
