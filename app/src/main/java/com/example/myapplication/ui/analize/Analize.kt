@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.analize
 
+import CheckQR
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -39,9 +40,11 @@ import java.util.concurrent.Executors
 
 import android.util.Base64
 import android.widget.TextView
+
 import com.example.myapplication.DatabaseHelper
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -50,6 +53,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import org.json.JSONObject
+
+
 
 
 class Analize : Fragment() {
@@ -72,6 +77,9 @@ class Analize : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAnalizeBinding.inflate(inflater, container, false)
+
+
+
         return binding.root
     }
 
@@ -163,11 +171,33 @@ class Analize : Fragment() {
                     val rawValue = barcode.rawValue
                     val valueType = barcode.valueType
                     Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
+
+
+                   // val getNumberFunction = check("20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1")
+                   // Log.d(TAG, "QR getNumberFunction: $getNumberFunction")
+
+                    val token = "20253.Umk1V1xWs9M87DoWY"
+                    val url = "https://proverkacheka.com/api/v1/check/get"
+                    val qrraw = "20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1"
+
+                    performPostRequest(token, url, qrraw) { responseBody ->
+                        // Обработка ответа от сервера
+                        if (responseBody != null) {
+                            // Результат запроса доступен в переменной responseBody
+                            Log.d(TAG, "Response: $responseBody")
+                        } else {
+                            // Ошибка выполнения запроса
+                            println("Request failed.")
+                        }
+                    }
+
                 }
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
             }
+
+
     }
 
     fun uriToBitmap(uri: Uri): Bitmap {
@@ -391,4 +421,32 @@ class Analize : Fragment() {
                 startCamera()
             }
         }
+
+    fun performPostRequest(token: String, url: String, qrraw: String, callback: (String?) -> Unit) {
+        val client = OkHttpClient()
+
+        val requestBody = FormBody.Builder()
+            .add("token", token)
+            .add("qrraw", qrraw)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Обработка ошибок при выполнении запроса
+                e.printStackTrace()
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                callback(responseBody)
+            }
+        })
+    }
+
 }
