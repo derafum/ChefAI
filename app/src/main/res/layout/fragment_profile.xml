@@ -22,7 +22,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="50dp"
+        android:translationX="45dp"
         android:translationY="140dp" />
 
     <Button
@@ -30,6 +30,7 @@
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
+
 
         android:backgroundTint="@color/mainPink"
         android:bottomLeftRadius="10dp"
@@ -40,7 +41,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="50dp"
+        android:translationX="45dp"
         android:translationY="230dp" />
 
     <Button
@@ -58,7 +59,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="50dp"
+        android:translationX="45dp"
         android:translationY="320dp" />
 
     <Button
@@ -66,7 +67,6 @@
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
-
         android:backgroundTint="@color/mainPink"
         android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
@@ -76,7 +76,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="50dp"
+        android:translationX="45dp"
         android:translationY="410dp" />
 
     <Button
@@ -94,6 +94,6 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="50dp"
+        android:translationX="45dp"
         android:translationY="50dp" />
 </FrameLayout>

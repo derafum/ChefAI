@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="688dp"
         android:layout_marginTop="220dp"
-        android:translationY="37dp"
+        android:translationY="60dp"
         app:layout_constraintBottom_toTopOf="@+id/bNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:translationY="25dp"
+        android:translationY="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -35,7 +35,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ваши рекомендации:"
-        android:textColor="@color/mainBlack" />
+        android:textColor="@color/mainBlack"
+        android:textSize="18dp"
+        android:translationX="9dp"
+        android:translationY="5dp" />
 
     <TextView
         android:id="@+id/textView22"
@@ -43,6 +46,8 @@
         android:layout_height="wrap_content"
         android:text="Популярное:"
         android:textColor="@color/mainBlack"
-        android:translationY="230dp" />
+        android:textSize="18dp"
+        android:translationX="9dp"
+        android:translationY="250dp" />
 
 </FrameLayout>
