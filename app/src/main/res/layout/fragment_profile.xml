@@ -1,9 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.profile.Profile">
 
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="310dp"
+        android:layout_height="60dp"
+        android:background="@drawable/roundstyle"
+
+        android:backgroundTint="@color/mainPink"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:gravity="center|clip_vertical"
+        android:text="Пройти вкусотест"
+        android:textColor="@color/simpleWhite"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:translationX="50dp"
+        android:translationY="140dp" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="310dp"
+        android:layout_height="60dp"
+        android:background="@drawable/roundstyle"
+
+        android:backgroundTint="@color/mainPink"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:gravity="center|clip_vertical"
+        android:text="Настройки"
+        android:textColor="@color/simpleWhite"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:translationX="50dp"
+        android:translationY="230dp" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="310dp"
+        android:layout_height="60dp"
+        android:background="@drawable/roundstyle"
+
+        android:backgroundTint="@color/mainPink"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:gravity="center|clip_vertical"
+        android:text="Помощь"
+        android:textColor="@color/simpleWhite"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:translationX="50dp"
+        android:translationY="320dp" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="310dp"
+        android:layout_height="60dp"
+        android:background="@drawable/roundstyle"
+
+        android:backgroundTint="@color/mainPink"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:gravity="center|clip_vertical"
+        android:text="О приложении"
+        android:textColor="@color/simpleWhite"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:translationX="50dp"
+        android:translationY="410dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="310dp"
+        android:layout_height="60dp"
+        android:background="@drawable/roundstyle"
+
+        android:backgroundTint="@color/mainPink"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:gravity="center|clip_vertical"
+        android:text="Список продуктов"
+        android:textColor="@color/simpleWhite"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:translationX="50dp"
+        android:translationY="50dp" />
 </FrameLayout>
