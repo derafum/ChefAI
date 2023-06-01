@@ -140,8 +140,6 @@ class DatabaseHelper(private val context: Context) :
         } catch (e: SQLiteException) {
             // Handle exception
         } finally {
-            cursor?.close()
-            db.close()
         }
 
         return result
@@ -169,8 +167,6 @@ class DatabaseHelper(private val context: Context) :
         } catch (e: SQLiteException) {
             // Handle exception
         } finally {
-            cursor?.close()
-            db.close()
         }
 
         return result
