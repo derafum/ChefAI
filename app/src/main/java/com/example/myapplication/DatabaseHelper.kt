@@ -148,4 +148,32 @@ class DatabaseHelper(private val context: Context) :
     }
 
 
+    @SuppressLint("Range")
+    fun getRecipesByNumber(number: Int): List<Recipe_bd> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val result = mutableListOf<Recipe_bd>()
+
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_NAME, $COLUMN_IMG, $COLUMN_TIME FROM $TABLE_NAME WHERE $COLUMN_NUMBER = ?",
+                arrayOf(number.toString())
+            )
+
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                val img = cursor.getString(cursor.getColumnIndex(COLUMN_IMG))
+                val time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
+                result.add(Recipe_bd(name, img, time))
+            }
+        } catch (e: SQLiteException) {
+            // Handle exception
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return result
+    }
+
 }

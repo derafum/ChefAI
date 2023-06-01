@@ -116,4 +116,7 @@ dependencies {
 
     implementation "com.github.kittinunf.fuel:fuel:2.3.1"
 
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+
 }

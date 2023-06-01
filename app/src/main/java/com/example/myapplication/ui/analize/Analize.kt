@@ -1,10 +1,12 @@
 package com.example.myapplication.ui.analize
 
 import CheckQR
+import FoodAdapter
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -40,6 +42,8 @@ import java.util.concurrent.Executors
 
 import android.util.Base64
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import com.example.myapplication.DatabaseHelper
 import okhttp3.Call
@@ -51,10 +55,21 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+
 import java.io.IOException
 import org.json.JSONObject
 
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
+import com.example.myapplication.Food
+import com.example.myapplication.Recipe
+import com.example.myapplication.RecipeAdapter
+import com.example.myapplication.databinding.FragmentHomeBinding
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class Analize : Fragment() {
@@ -63,6 +78,14 @@ class Analize : Fragment() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var capturedImageView: ImageView
+
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var foodList: ArrayList<Food>
+    private lateinit var foodAdapter: FoodAdapter
+
+
+
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -75,18 +98,16 @@ class Analize : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
+        // Используйте переданные параметры container и inflater для создания представления фрагмента
         binding = FragmentAnalizeBinding.inflate(inflater, container, false)
-
-
-
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[AnalizeViewModel::class.java]
         cameraExecutor = Executors.newSingleThreadExecutor()
+       // recyclerView = view.findViewById(R.id.reView)
 
         capturedImageView = view.findViewById(R.id.capturedImageView)
 
@@ -98,6 +119,18 @@ class Analize : Fragment() {
         }
 
         binding.imageCaptureButton.setOnClickListener { takePhoto() }
+
+
+
+        val dbHelper = DatabaseHelper(requireActivity())
+        var offset = 0
+
+
+
+
+
+
+
     }
 
     override fun onDestroyView() {
@@ -143,7 +176,9 @@ class Analize : Fragment() {
                     Log.d(TAG, msg)
 
                     displayCapturedPhoto(savedUri)
-                    scanQRCode(savedUri)
+                  //  var scannedNames = mutableListOf<String>()
+                    //scannedNames = scanQRCode(savedUri)
+                //    Log.d(TAG, "QR scannedNames: $scannedNames")
                     analysis(savedUri, requireContext().contentResolver)
                 }
             }
@@ -156,8 +191,9 @@ class Analize : Fragment() {
         capturedImageView.setImageBitmap(bitmap)
     }
 
-    private fun scanQRCode(imageUri: Uri) {
+    private fun scanQRCode(imageUri: Uri): MutableList<String> {
         val image = InputImage.fromFilePath(requireContext(), imageUri)
+        val names = mutableListOf<String>()
 
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
@@ -172,10 +208,6 @@ class Analize : Fragment() {
                     val valueType = barcode.valueType
                     Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
 
-
-                   // val getNumberFunction = check("20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1")
-                   // Log.d(TAG, "QR getNumberFunction: $getNumberFunction")
-
                     val token = "20253.Umk1V1xWs9M87DoWY"
                     val url = "https://proverkacheka.com/api/v1/check/get"
                     val qrraw = "20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1"
@@ -183,21 +215,52 @@ class Analize : Fragment() {
                     performPostRequest(token, url, qrraw) { responseBody ->
                         // Обработка ответа от сервера
                         if (responseBody != null) {
-                            // Результат запроса доступен в переменной responseBody
                             Log.d(TAG, "Response: $responseBody")
-                        } else {
-                            // Ошибка выполнения запроса
-                            println("Request failed.")
+
+
+                                val jsonObject = JSONObject(responseBody)
+                                val jsonData = jsonObject.optJSONObject("data")
+                                val jsonItems = jsonData?.optJSONObject("json")?.optJSONArray("items")
+
+                                if (jsonItems != null) {
+                                    for (i in 0 until jsonItems.length()) {
+                                        val item = jsonItems.optJSONObject(i)
+                                        val name = item?.optString("name")?.toLowerCase()
+                                        if (!name.isNullOrEmpty()) {
+                                            names.add(name)
+                                            Log.d(TAG, "Product name: $name")
+                                        }
+                                    }
+                                }
+
                         }
                     }
-
                 }
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
             }
 
+        return names
+    }
 
+
+
+
+    fun extractNames(jsonString: String): List<String> {
+        val names = mutableListOf<String>()
+
+        val jsonObject = JSONObject(jsonString)
+        val dataObject = jsonObject.getJSONObject("data")
+        val itemsArray = dataObject.getJSONArray("items")
+
+        for (i in 0 until itemsArray.length()) {
+            val item = itemsArray.getJSONObject(i)
+            val name = item.getString("name")
+            names.add(name)
+        }
+
+        return names
     }
 
     fun uriToBitmap(uri: Uri): Bitmap {
@@ -220,25 +283,7 @@ class Analize : Fragment() {
     }
 
 
-    /*
-          private fun analysis(imageUri: Uri) {
-              try {
-                  Log.d(TAG, "imageUri00: $imageUri")
-                  if (!Python.isStarted()) {
-                      Python.start(AndroidPlatform(requireActivity()))
-                  }
-                  Log.d(TAG, "imageUri0: $imageUri")
-                  val python = Python.getInstance()
-                  Log.d(TAG, "imageUri1: $imageUri")
-                  val module = python.getModule("analysis_img")
-                  Log.d(TAG, "imageUri2: $imageUri")
-                  val predict = module.callAttr("main", imageUri)
-                  Log.d(TAG, "predict: $predict")
-              } catch (e: Exception) {
-                  Log.e(TAG, "Python script execution failed: ${e.message}", e)
-              }
-          }
-      */
+
 
 
 
@@ -256,51 +301,154 @@ class Analize : Fragment() {
     @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun analysis(imageUri: Uri, contentResolver: ContentResolver) {
-        val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
 
-        val inputStream = contentResolver.openInputStream(imageUri)
-        val imageBytes = inputStream?.readBytes()
 
-        val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
 
-        val client = OkHttpClient()
-        val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
+        var flag = false
 
-        val callback = object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Обработка ошибок при выполнении запроса
-                e.printStackTrace()
-            }
+        /*
+        val image = InputImage.fromFilePath(requireContext(), imageUri)
+        val names = mutableListOf<String>()
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
-                // Обработка ответа от сервера
-                // responseBody содержит ответ от сервера в виде строки
-                activity?.runOnUiThread {
-                    // Найти TextView по его ID
-                    val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
-                    // Установить значение responseBody в текстовое поле
-                    val predict_product = responseBody?.let { parseClasses(it) }
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
 
-                    val dbHelper = DatabaseHelper(requireActivity())
+        val scanner = BarcodeScanning.getClient(options)
 
-                    if (predict_product != null) {
-                        for (number in predict_product) {
-                            val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
-                            Log.d(TAG, "answer: $recipeNumbers")
-                            responseTextView.text = "Response Body: $predict_product, $recipeNumbers"
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                for (barcode in barcodes) {
+                    val rawValue = barcode.rawValue
+                    val valueType = barcode.valueType
+                    Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
+
+                    val token = "20253.Umk1V1xWs9M87DoWY"
+                    val url = "https://proverkacheka.com/api/v1/check/get"
+                    val qrraw = "20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1"
+
+                    performPostRequest(token, url, qrraw) { responseBody ->
+                        // Обработка ответа от сервера
+                        if (responseBody != null) {
+                            Log.d(TAG, "Response: $responseBody")
+
+
+                            val jsonObject = JSONObject(responseBody)
+                            val jsonData = jsonObject.optJSONObject("data")
+                            val jsonItems = jsonData?.optJSONObject("json")?.optJSONArray("items")
+                            flag = true
+                            if (jsonItems != null) {
+                                for (i in 0 until jsonItems.length()) {
+                                    val item = jsonItems.optJSONObject(i)
+                                    val name = item?.optString("name")?.toLowerCase()
+                                    if (!name.isNullOrEmpty()) {
+
+                                        names.add(name)
+                                        Log.d(TAG, "Product name: $name")
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }
             }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
+            }
+
+
+
+
+*/
+
+
+
+
+
+        if (!flag) {
+
+            val apiUrl =
+                "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
+
+            val inputStream = contentResolver.openInputStream(imageUri)
+            val imageBytes = inputStream?.readBytes()
+
+            val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+            val client = OkHttpClient()
+            val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
+
+            val callback = object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    // Обработка ошибок при выполнении запроса
+                    e.printStackTrace()
+                }
+
+                @SuppressLint("SetTextI18n")
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string()
+                    Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
+                    // Обработка ответа от сервера
+                    // responseBody содержит ответ от сервера в виде строки
+                    activity?.runOnUiThread {
+                        // Найти TextView по его ID
+                        val responseTextView =
+                            requireView().findViewById<TextView>(R.id.responseTextView)
+                        // Установить значение responseBody в текстовое поле
+                        val predict_product = responseBody?.let { parseClasses(it) }
+
+                        val dbHelper = DatabaseHelper(requireActivity())
+
+                        if (predict_product != null) {
+                            for (number in predict_product) {
+                                val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
+                                Log.d(TAG, "answer: $recipeNumbers")
+                                responseTextView.text =
+                                    "Response Body: $predict_product"
+                                binding.reView.layoutManager = LinearLayoutManager(context)
+                                val adapter = RecipeAdapter()
+                                binding.reView.adapter = adapter
+
+
+                                    GlobalScope.launch(Dispatchers.Main) {
+                                        for (product in predict_product){
+                                        val number = withContext(Dispatchers.IO) { dbHelper.getRecipeNumbersByIngredients(product) }
+                                        Log.d("CameraXApp", "Name, $number")
+                                        val recipes = withContext(Dispatchers.IO) { dbHelper.getRecipesByNumber(number.elementAt(0)) }
+
+                                        for (recipe in recipes) {
+                                            val name = recipe.name
+                                            val img = recipe.img
+                                            val time = recipe.time
+                                            val recipeItem = Recipe(img, name, "Time: $time")
+                                            adapter.addRecipe(recipeItem)
+                                            Log.d("CameraXApp", "Name, $name, img, $img, time, $time")
+                                        }
+
+                                        withContext(Dispatchers.IO) {
+
+
+                                        }
+                                }
+
+
+
+
+                                }
+
+
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            performPostRequest(apiUrl, requestBody, callback)
+
         }
-
-
-
-        performPostRequest(apiUrl, requestBody, callback)
-
-
     }
 
 
@@ -449,4 +597,8 @@ class Analize : Fragment() {
         })
     }
 
+
+
 }
+
+
