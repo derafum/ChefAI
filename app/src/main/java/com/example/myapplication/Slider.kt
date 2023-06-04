@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.ui.home.Home
 
 class Slider : AppCompatActivity() {
 
@@ -29,7 +30,7 @@ class Slider : AppCompatActivity() {
         // addDataToList()
 
 
-        foodAdapter = FoodAdapter(foodList)
+        foodAdapter = FoodAdapter(foodList, Home.newInstance())
         recyclerView.adapter = foodAdapter
     }
 

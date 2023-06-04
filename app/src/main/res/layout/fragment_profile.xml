@@ -37,12 +37,16 @@
         android:bottomRightRadius="10dp"
 
         android:gravity="center|clip_vertical"
+        android:shadowColor="@color/mainPink"
         android:text="Настройки"
         android:textColor="@color/simpleWhite"
+        android:textColorHint="@color/mainPink"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
         android:translationX="45dp"
-        android:translationY="230dp" />
+        android:translationY="230dp"
+        app:rippleColor="@color/mainPink"
+        app:strokeColor="@color/mainPink" />
 
     <Button
         android:id="@+id/button5"
@@ -91,9 +95,10 @@
 
         android:gravity="center|clip_vertical"
         android:text="Список продуктов"
-        android:textColor="@color/simpleWhite"
+        android:textColor="@color/white"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
         android:translationX="45dp"
         android:translationY="50dp" />
+
 </FrameLayout>

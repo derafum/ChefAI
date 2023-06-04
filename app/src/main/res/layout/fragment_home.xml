@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="688dp"
         android:layout_marginTop="220dp"
-        android:translationY="60dp"
+        android:translationY="75dp"
         app:layout_constraintBottom_toTopOf="@+id/bNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,6 +48,6 @@
         android:textColor="@color/mainBlack"
         android:textSize="18dp"
         android:translationX="9dp"
-        android:translationY="250dp" />
+        android:translationY="265dp" />
 
 </FrameLayout>

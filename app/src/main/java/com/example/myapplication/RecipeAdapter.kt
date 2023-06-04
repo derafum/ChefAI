@@ -13,6 +13,7 @@ class RecipeAdapter : RecyclerView.Adapter<RecipeAdapter.RecipeHolder>() {
     class RecipeHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = RecipeItemBinding.bind(item)
 
+
         fun bind(recipe: Recipe) = with(binding) {
             Glide.with(itemView)
                 .load(recipe.imageId)

@@ -179,7 +179,11 @@ class Analize : Fragment() {
                   //  var scannedNames = mutableListOf<String>()
                     //scannedNames = scanQRCode(savedUri)
                 //    Log.d(TAG, "QR scannedNames: $scannedNames")
-                    analysis(savedUri, requireContext().contentResolver)
+                    analysis_check(savedUri, requireContext().contentResolver) { product_names ->
+                        // Здесь ты можешь использовать полученные product_names
+                        Log.d(TAG, "Product names: $product_names")
+                    }
+                   // analysis(savedUri, requireContext().contentResolver)
                 }
             }
         )
@@ -298,6 +302,103 @@ class Analize : Fragment() {
         client.newCall(request).enqueue(callback)
     }
 
+
+    private fun performPostRequest_func(responseBody: String?): MutableList<String> {
+        val product_names = mutableListOf<String>()
+        if (responseBody != null) {
+            Log.d(TAG, "Response: $responseBody")
+
+
+            val jsonObject = JSONObject(responseBody)
+            val jsonData = jsonObject.optJSONObject("data")
+            val jsonItems = jsonData?.optJSONObject("json")?.optJSONArray("items")
+            if (jsonItems != null) {
+                for (i in 0 until jsonItems.length()) {
+                    val item = jsonItems.optJSONObject(i)
+                    val name = item?.optString("name")?.toLowerCase()
+                    if (!name.isNullOrEmpty()) {
+
+                        product_names.add(name)
+                        Log.d(TAG, "Product name: $name")
+                    }
+                }
+            }
+
+        }
+        return product_names
+    }
+    @SuppressLint("Recycle")
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun analysis_check(
+        imageUri: Uri,
+        contentResolver: ContentResolver,
+        callback: (List<String>) -> Unit
+    ) {
+        val image = InputImage.fromFilePath(requireContext(), imageUri)
+        val product_names = mutableListOf<String>()
+
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+
+        val scanner = BarcodeScanning.getClient(options)
+
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                // Вызываем колбэк после завершения сканирования
+                processBarcodes(barcodes, product_names) {
+                    // Вызываем колбэк после завершения обработки QR-кодов
+                    callback(product_names)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "QR Code scanning failed: ${e.message}", e)
+                // Вызываем колбэк в случае ошибки
+                callback(emptyList())
+            }
+    }
+
+    private fun processBarcodes(
+        barcodes: List<Barcode>,
+        product_names: MutableList<String>,
+        callback: () -> Unit
+    ) {
+        for (barcode in barcodes) {
+            val rawValue = barcode.rawValue
+            val valueType = barcode.valueType
+            Log.d(TAG, "QR Code Value: $rawValue, Value Type: $valueType")
+
+            val token = "20253.Umk1V1xWs9M87DoWY"
+            val url = "https://proverkacheka.com/api/v1/check/get"
+            val qrraw = "20230531T1757&s=559.89&fn=9960440302156794&i=73600&fp=385665697&n=1"
+
+            performPostRequest(token, url, qrraw) { responseBody ->
+                // Обработка ответа от сервера
+                if (responseBody != null) {
+                    Log.d(TAG, "Response: $responseBody")
+
+                    val jsonObject = JSONObject(responseBody)
+                    val jsonData = jsonObject.optJSONObject("data")
+                    val jsonItems = jsonData?.optJSONObject("json")?.optJSONArray("items")
+                    if (jsonItems != null) {
+                        for (i in 0 until jsonItems.length()) {
+                            val item = jsonItems.optJSONObject(i)
+                            val name = item?.optString("name")?.toLowerCase()
+                            if (!name.isNullOrEmpty()) {
+                                product_names.add(name)
+                                Log.d(TAG, "Product name: $name")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // Вызываем колбэк после обработки всех QR-кодов
+        callback()
+    }
+
+
+
     @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun analysis(imageUri: Uri, contentResolver: ContentResolver) {
@@ -306,9 +407,9 @@ class Analize : Fragment() {
 
         var flag = false
 
-        /*
+
         val image = InputImage.fromFilePath(requireContext(), imageUri)
-        val names = mutableListOf<String>()
+        val product_names = mutableListOf<String>()
 
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
@@ -343,7 +444,7 @@ class Analize : Fragment() {
                                     val name = item?.optString("name")?.toLowerCase()
                                     if (!name.isNullOrEmpty()) {
 
-                                        names.add(name)
+                                        product_names.add(name)
                                         Log.d(TAG, "Product name: $name")
                                     }
                                 }
@@ -360,7 +461,6 @@ class Analize : Fragment() {
 
 
 
-*/
 
 
 
@@ -385,7 +485,7 @@ class Analize : Fragment() {
                     e.printStackTrace()
                 }
 
-                @SuppressLint("SetTextI18n")
+                @SuppressLint("SetTextI18n", "SuspiciousIndentation")
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
                     Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")

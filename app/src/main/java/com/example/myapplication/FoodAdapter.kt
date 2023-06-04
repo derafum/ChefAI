@@ -7,9 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.Food
 import com.example.myapplication.R
+import com.example.myapplication.ui.home.Home
 
-class FoodAdapter(private val foodList: List<Food>) :
+class FoodAdapter(val foodList: List<Food>, private val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+    }
 
     class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val foodImageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -32,5 +37,8 @@ class FoodAdapter(private val foodList: List<Food>) :
             .load(food.foodImage) // Подставьте строку с URL или путем к файлу
             .into(holder.foodImageView)
         holder.foodNameTv.text = food.foodName
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onItemClick(position)
+        }
     }
 }

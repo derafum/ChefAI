@@ -20,7 +20,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Home : Fragment() {
+class Home : Fragment(), FoodAdapter.OnItemClickListener {
 
     companion object {
         fun newInstance() = Home()
@@ -82,8 +82,8 @@ class Home : Fragment() {
                 Log.d("MyLogMAct", "countRecommendList, $countRecommendList")
 
 
-                if (! Python.isStarted()) {
-                    Python.start(AndroidPlatform(requireActivity()));
+                if (!Python.isStarted()) {
+                    Python.start(AndroidPlatform(requireActivity()))
                 }
 
                 val python = Python.getInstance()
@@ -92,25 +92,25 @@ class Home : Fragment() {
 
                 for (number in countRecommendList) {
                     val getNumberFunction = module.callAttr("rec_system", number)
-                    val recReceipe = getNumberFunction.asList()
+                    val recRecipe = getNumberFunction.asList()
 
-                    for (receipeEntry in recReceipe) {
-                        val receipe = receipeEntry.toInt()
-                        val result = dbHelper.getRecipeUrlAndImgByNumber(receipe)
+                    for (recipeEntry in recRecipe) {
+                        val recipe = recipeEntry.toInt()
+                        val result = dbHelper.getRecipeUrlAndImgByNumber(recipe)
                         if (result != null) {
                             val (title, img) = result
                             foodList.add(Food(img, title))
                         }
                     }
 
-                    Log.d("MyLogMAct", "recReceipe, $recReceipe")
+                    Log.d("MyLogMAct", "recRecipe, $recRecipe")
                 }
 
                 launch(Dispatchers.Main) {
                     recyclerView = binding.RecyclerView
                     recyclerView.setHasFixedSize(true)
                     recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
-                    foodAdapter = FoodAdapter(foodList)
+                    foodAdapter = FoodAdapter(foodList, this@Home)
                     recyclerView.adapter = foodAdapter
                 }
             }
@@ -125,12 +125,18 @@ class Home : Fragment() {
         // TODO: Use the ViewModel
     }
 
+    override fun onItemClick(position: Int) {
+        val foodItem = foodAdapter.foodList[position]
+        Log.d("SliderCardClick", "Title: ${foodItem}")
+        // Дополнительные действия при нажатии на карточку слайдера recipes
+    }
+
     private fun init() {
         recyclerView = binding.RecyclerView
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         foodList = ArrayList()
-        foodAdapter = FoodAdapter(foodList)
+        foodAdapter = FoodAdapter(foodList, this@Home)
         recyclerView.adapter = foodAdapter
     }
 }
