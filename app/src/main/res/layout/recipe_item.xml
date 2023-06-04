@@ -47,7 +47,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="TextView" />
+                android:gravity="center"
+                android:text="TextView"
+                android:textColor="@color/mainBlack"
+                android:translationX="-10dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

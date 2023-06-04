@@ -84,6 +84,39 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
+
+
+    @SuppressLint("Range")
+    fun getRecipeNumbersByIngredients(ingredients: String): List<Int> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val recipeNumbers = mutableListOf<Int>()
+
+        try {
+            //al query1 = "SELECT $COLUMN_NUMBER FROM $TABLE_NAME WHERE $COLUMN_NAME IN ($placeholders)"
+
+            val query = "SELECT * FROM recipes WHERE lower(ingredients) like '%$ingredients%' ORDER BY likes DESC LIMIT 10"
+            cursor = db.rawQuery(query, arrayOfNulls(0))
+
+            while (cursor.moveToNext()) {
+                val number = cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+                recipeNumbers.add(number)
+            }
+        } catch (e: SQLiteException) {
+            // Обрабатываем исключение
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return recipeNumbers
+    }
+
+
+
+
+
+
     data class Recipe_bd(val name: String, val img: String, val time: String)
 
     @SuppressLint("Range")
@@ -107,12 +140,36 @@ class DatabaseHelper(private val context: Context) :
         } catch (e: SQLiteException) {
             // Handle exception
         } finally {
-            cursor?.close()
-            db.close()
         }
 
         return result
     }
 
+
+    @SuppressLint("Range")
+    fun getRecipesByNumber(number: Int): List<Recipe_bd> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val result = mutableListOf<Recipe_bd>()
+
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_NAME, $COLUMN_IMG, $COLUMN_TIME FROM $TABLE_NAME WHERE $COLUMN_NUMBER = ?",
+                arrayOf(number.toString())
+            )
+
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                val img = cursor.getString(cursor.getColumnIndex(COLUMN_IMG))
+                val time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
+                result.add(Recipe_bd(name, img, time))
+            }
+        } catch (e: SQLiteException) {
+            // Handle exception
+        } finally {
+        }
+
+        return result
+    }
 
 }
