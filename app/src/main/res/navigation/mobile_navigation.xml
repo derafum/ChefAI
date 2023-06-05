@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_analyze"
-        android:name="com.example.myapplication.ui.analize.Analize"
+        android:name="com.example.myapplication.ui.analize.Analyze"
         android:label="Scaner"
         tools:layout="@layout/fragment_analize" />
 
