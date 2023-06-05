@@ -13,7 +13,7 @@ class Activity3 : AppCompatActivity() {
     private lateinit var foodAdapter: FoodAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_2)
+        setContentView(R.layout.started_page)
 
         init()
     }
