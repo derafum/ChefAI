@@ -90,10 +90,7 @@ dependencies {
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
 
 
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-
-
-
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 
 
 
@@ -110,9 +107,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
 
 
-
     implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
     implementation "com.github.kittinunf.fuel:fuel:2.3.1"
 

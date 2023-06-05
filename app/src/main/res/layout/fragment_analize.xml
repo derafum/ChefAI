@@ -5,7 +5,7 @@
     android:id="@+id/fragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.analize.Analize">
+    tools:context=".ui.analize.Analyze">
 
         <androidx.camera.view.PreviewView
             android:id="@+id/viewFinder"
@@ -21,14 +21,15 @@
             android:layout_alignBottom="@id/viewFinder"
             android:layout_marginTop="128dp"
             android:rotation="90"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/the_photo_taken" />
 
         <TextView
             android:id="@+id/capturePromptTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Сфотографируйте чек или продукты на столе"
+            android:text="@string/please_take_a_photo"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:padding="12dp"
@@ -43,7 +44,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="450dp"
             android:layout_marginBottom="40dp"
-            android:text="Сканировать продукты" />
+            android:text="@string/scan_products" />
 
 
         <TextView
@@ -51,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="396dp"
-            android:text="Response Body:"
+            android:text="@string/response_body"
             android:textSize="16sp" />
 
         <androidx.recyclerview.widget.RecyclerView
