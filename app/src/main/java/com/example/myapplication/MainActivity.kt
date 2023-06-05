@@ -33,8 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     )
 
-    private var index = 0
-
 
     /*
         private fun init2() = with(binding){
@@ -57,14 +55,14 @@ class MainActivity : AppCompatActivity() {
 
         if (isFirstRun) {
             //show start activity
-            startActivity(Intent(this@MainActivity, Activity2::class.java))
+            startActivity(Intent(this@MainActivity, StartedPage::class.java))
             Toast.makeText(this@MainActivity, "First Run", Toast.LENGTH_LONG)
                 .show()
         }
 
 
         getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-            .putBoolean("isFirstRun", false).commit()
+            .putBoolean("isFirstRun", false).apply()
 
 
         binding = ActivityMainBinding.inflate(layoutInflater)

@@ -8,4 +8,8 @@
     <string name="take_photo">Сделать фото</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="please_take_a_photo">Сфотографируйте чек или продукты на столе</string>
+    <string name="scan_products">Сканировать продукты</string>
+    <string name="response_body">Response Body:</string>
+    <string name="the_photo_taken">the photo taken</string>
 </resources>
