@@ -218,62 +218,68 @@ class Analyze : Fragment() {
                 Log.d(TAG, "namesArray $jsonObject")
             } else {
                 Log.d(TAG, "namesArray null")
+                check_products(imageUri)
 
             }
 
-            check_products(imageUri)
+
          //   handleAsJustPhoto()
 
         }
     }
 
     private suspend fun recognizeQrCode(imageUri: Uri): JSONObject? = withContext(Dispatchers.IO) {
-        val inputStream: InputStream? = requireContext().contentResolver.openInputStream(imageUri)
-        val imageBytes = inputStream?.readBytes()
+        try {
+            val inputStream: InputStream? = requireContext().contentResolver.openInputStream(imageUri)
+            val imageBytes = inputStream?.readBytes()
 
-        val qrFile = File(requireContext().cacheDir, "qrCode.jpg")
-        qrFile.writeBytes(imageBytes ?: return@withContext null)
+            val qrFile = File(requireContext().cacheDir, "qrCode.jpg")
+            qrFile.writeBytes(imageBytes ?: return@withContext null)
 
-        val token = "20269.DDqUwXE3jHFbumFYw"
-        val url = "https://proverkacheka.com/api/v1/check/get"
+            val token = "20269.DDqUwXE3jHFbumFYw"
+            val url = "https://proverkacheka.com/api/v1/check/get"
 
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("token", token)
-            .addFormDataPart(
-                "qrfile",
-                qrFile.name,
-                qrFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            )
-            .build()
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("token", token)
+                .addFormDataPart(
+                    "qrfile",
+                    qrFile.name,
+                    qrFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                )
+                .build()
 
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-        val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+            val client = OkHttpClient()
 
-        var jsonObject: JSONObject? = null
+            var jsonObject: JSONObject? = null
 
-        val response = client.newCall(request).execute()
-        val jsonResponse = response.body?.string()
-        jsonObject = jsonResponse?.let { JSONObject(it) }
+            val response = client.newCall(request).execute()
+            val jsonResponse = response.body?.string()
+            jsonObject = jsonResponse?.let { JSONObject(it) }
 
-        when (jsonObject?.optInt("code", -1)) {
-            1 -> {
-                // Обработка кода 1
-                // ...
-                Log.d(TAG, "успешное сканирование чека: $jsonObject")
+            when (jsonObject?.optInt("code", -1)) {
+                1 -> {
+                    // Обработка кода 1
+                    // ...
+                    Log.d(TAG, "успешное сканирование чека: $jsonObject")
+                }
+
+                else -> {
+                    // Обработка неизвестного кода
+                    Log.d(TAG, "неуспешное сканирование чека")
+                }
             }
+            Log.d(TAG, "qr: $jsonObject")
 
-            else -> {
-                // Обработка неизвестного кода
-                Log.d(TAG, "неуспешное сканирование чека")
-            }
+            return@withContext jsonObject
+        } catch (e: Exception) {
+            Log.e(TAG, "Ошибка при распознавании QR-кода: ${e.message}", e)
+            return@withContext null
         }
-        Log.d(TAG, "qr: $jsonObject")
-
-        return@withContext jsonObject
     }
 
 
