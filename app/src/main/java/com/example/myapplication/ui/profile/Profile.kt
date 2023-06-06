@@ -21,34 +21,32 @@ class Profile : Fragment() {
 
     private lateinit var viewModel: ProfileViewModel
 
-    lateinit var binding: FragmentProfileBinding
+    private lateinit var binding: FragmentProfileBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentProfileBinding.inflate(layoutInflater, container, false)
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonAbout.setOnClickListener{
+        binding.button3.setOnClickListener {
             MAIN.navController1.navigate(R.id.action_navigation_profile_to_descriptionFragment2)
-
         }
 
-        binding.buttonVkusotest.setOnClickListener{
+        binding.button2.setOnClickListener {
             MAIN.navController1.navigate(R.id.action_navigation_profile_to_startedPage2)
         }
 
-        binding.buttonHelp.setOnClickListener{
-
-            val url = "https://yandex.ru/search/?text=как+сделать+переход+по+ссылке+android+studio+kotlin&lr=51&clid=2270456&src=suggest_Nin"
+        binding.button5.setOnClickListener {
+            val url =
+                "https://t.me/+FnXJaPz7jD85YmJi"
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(url)
             startActivity(i)
-
         }
     }
 
@@ -57,8 +55,4 @@ class Profile : Fragment() {
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         // TODO: Use the ViewModel
     }
-
-
-
-
 }
