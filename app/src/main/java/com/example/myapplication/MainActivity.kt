@@ -17,8 +17,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
-
-    private var adapter = RecipeAdapter()
+/*
+    private var adapter = RecipeAdapter(, null)
     private val imageIdList = listOf(
         R.drawable.recipe1,
         R.drawable.recipe2,
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         R.drawable.recipe6
 
     )
-
+*/
 
     /*
         private fun init2() = with(binding){
