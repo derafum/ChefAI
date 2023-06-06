@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -16,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+    lateinit var navController1: NavController
 
 /*
     private var adapter = RecipeAdapter(, null)
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MAIN = this
 
 
         val isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
@@ -92,6 +96,8 @@ class MainActivity : AppCompatActivity() {
          */
 
         val navView: BottomNavigationView = binding.bNav
+
+        navController1 = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main)
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

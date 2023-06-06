@@ -32,6 +32,23 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.myapplication.ui.profile.Profile"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_descriptionFragment2"
+            app:destination="@id/descriptionFragment2" />
+        <action
+            android:id="@+id/action_navigation_profile_to_startedPage2"
+            app:destination="@id/startedPage2" />
+    </fragment>
+    <fragment
+        android:id="@+id/descriptionFragment2"
+        android:name="com.example.myapplication.DescriptionFragment"
+        android:label="fragment_description"
+        tools:layout="@layout/fragment_description" />
+    <activity
+        android:id="@+id/startedPage2"
+        android:name="com.example.myapplication.StartedPage"
+        android:label="started_page"
+        tools:layout="@layout/started_page" />
 
 </navigation>

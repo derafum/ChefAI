@@ -12,12 +12,14 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
+import com.example.myapplication.databinding.ActivitySplashBinding
 import kotlin.random.Random
 
 
 class StartedPage : AppCompatActivity() {
     private var count = 0
     private var count_need = 0
+
 
 
     private val numbers = arrayOf(

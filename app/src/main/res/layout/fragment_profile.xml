@@ -8,7 +8,7 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button2"
+        android:id="@+id/button_vkusotest"
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
@@ -27,13 +27,13 @@
         android:translationY="140dp" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button3"
+        android:id="@+id/button_settings"
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
 
 
-        android:backgroundTint="@color/mainPink"
+        android:backgroundTint="#ECB6B6"
         android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
 
@@ -46,7 +46,7 @@
         android:translationY="230dp" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button5"
+        android:id="@+id/button_help"
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
@@ -64,7 +64,7 @@
         android:translationY="320dp" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button6"
+        android:id="@+id/button_about"
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
@@ -83,12 +83,12 @@
         android:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button"
+        android:id="@+id/button_product_list"
         android:layout_width="310dp"
         android:layout_height="60dp"
-        android:background="@drawable/roundstyle"
+        android:background="@drawable/roundstyle2"
 
-        android:backgroundTint="@color/mainPink"
+        android:backgroundTint="#ECB6B6"
         android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
 
