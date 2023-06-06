@@ -2,12 +2,14 @@ package com.example.myapplication.ui.home
 
 import FoodAdapter
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +17,7 @@ import com.example.myapplication.*
 import com.example.myapplication.databinding.FragmentHomeBinding
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.example.myapplication.ui.likes.Likes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,6 +36,8 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
     private lateinit var foodAdapter: FoodAdapter
 
     private lateinit var binding: FragmentHomeBinding
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -128,8 +133,17 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
     override fun onItemClick(position: Int) {
         val foodItem = foodAdapter.foodList[position]
         Log.d("SliderCardClick", "Title: ${foodItem}")
-        // Дополнительные действия при нажатии на карточку слайдера recipes
+
+        val intent = Intent(requireContext(), StartedPage::class.java)
+
+        // Дополнительные данные, если необходимо передать информацию
+        intent.putExtra("recipePosition", position)
+
+        // Запуск активити
+        startActivity(intent)
+
     }
+
 
     private fun init() {
         recyclerView = binding.RecyclerView

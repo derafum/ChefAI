@@ -1,3 +1,4 @@
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.Food
 import com.example.myapplication.R
-import com.example.myapplication.ui.home.Home
 
 class FoodAdapter(val foodList: List<Food>, private val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {

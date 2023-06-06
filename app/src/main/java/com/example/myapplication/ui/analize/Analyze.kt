@@ -1,7 +1,7 @@
 package com.example.myapplication.ui.analize
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -9,11 +9,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -22,15 +24,23 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapplication.DatabaseHelper
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.File
@@ -198,17 +208,24 @@ class Analyze : Fragment() {
         }
 
     fun analysis(imageUri: Uri) {
-        recognizeQrCode(imageUri)
-        handleAsJustPhoto(imageUri)
+        runBlocking {
+            val jsonObject = recognizeQrCode(imageUri)
+            if (jsonObject != null) {
+                Log.e(TAG, "namesArray $jsonObject")
+            } else {
+                Log.e(TAG, "namesArray null")
+                handleAsJustPhoto(imageUri, requireContext().contentResolver)
+            }
+
+        }
     }
 
-    @SuppressLint("Recycle")
-    private fun recognizeQrCode(imageUri: Uri): Boolean {
+    private suspend fun recognizeQrCode(imageUri: Uri): JSONObject? = withContext(Dispatchers.IO) {
         val inputStream: InputStream? = requireContext().contentResolver.openInputStream(imageUri)
         val imageBytes = inputStream?.readBytes()
 
         val qrFile = File(requireContext().cacheDir, "qrCode.jpg")
-        qrFile.writeBytes(imageBytes ?: return false)
+        qrFile.writeBytes(imageBytes ?: return@withContext null)
 
         val token = "20269.DDqUwXE3jHFbumFYw"
         val url = "https://proverkacheka.com/api/v1/check/get"
@@ -229,42 +246,169 @@ class Analyze : Fragment() {
             .build()
         val client = OkHttpClient()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                // Обработка успешного ответа
-                val jsonResponse = response.body?.string()
-                val jsonObject = jsonResponse?.let { JSONObject(it) }
+        var jsonObject: JSONObject? = null
 
-                when (jsonObject?.optInt("code", -1)) {
-                    1 -> {
-                        // Обработка кода 1
-                        // ...
-                        Log.d(TAG, "успешное сканирование чека: $jsonObject")
-                    }
+        val response = client.newCall(request).execute()
+        val jsonResponse = response.body?.string()
+        jsonObject = jsonResponse?.let { JSONObject(it) }
 
-                    else -> {
-                        // Обработка неизвестного кода
-                        Log.d(TAG, "неуспешное сканирование чека")
-                    }
-                }
-                Log.d(TAG, "qr: $jsonObject")
+        when (jsonObject?.optInt("code", -1)) {
+            1 -> {
+                // Обработка кода 1
+                // ...
+                Log.d(TAG, "успешное сканирование чека: $jsonObject")
             }
 
-            override fun onFailure(call: Call, e: IOException) {
-                // Обработка ошибки
-                Log.e(TAG, "Ошибка при выполнении запроса", e)
+            else -> {
+                // Обработка неизвестного кода
+                Log.d(TAG, "неуспешное сканирование чека")
             }
-        })
+        }
+        Log.d(TAG, "qr: $jsonObject")
 
-        return false
+        return@withContext jsonObject
     }
 
-    fun handleAsJustPhoto(imageUri: Uri): Boolean {
+
+    fun extractNamesFromJSONObject(jsonString: JSONObject?): Array<String> {
+
+        val itemsArray = jsonString?.getJSONObject("data")?.getJSONObject("json")?.getJSONArray("items")
+
+        val namesList = mutableListOf<String>()
+
+        if (itemsArray != null) {
+            for (i in 0 until itemsArray.length()) {
+                val itemObject = itemsArray.getJSONObject(i)
+                val name = itemObject.getString("name")
+                namesList.add(name)
+            }
+        }
+
+        return namesList.toTypedArray()
+    }
+
+    fun handleAsJustPhoto(imageUri: Uri, contentResolver: ContentResolver): Boolean {
         // Обработка обычного фото
         println("Обработка обычного фото: $imageUri")
-        // Добавьте свою реализацию для обработки фото
+        val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
+
+        val inputStream = contentResolver.openInputStream(imageUri)
+        val imageBytes = inputStream?.readBytes()
+
+        val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+        val client = OkHttpClient()
+        val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
+
+        val callback = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Обработка ошибок при выполнении запроса
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
+                // Обработка ответа от сервера
+                // responseBody содержит ответ от сервера в виде строки
+                activity?.runOnUiThread {
+                    // Найти TextView по его ID
+                    val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
+                    // Установить значение responseBody в текстовое поле
+                    val predict_product = responseBody?.let { parseClasses(it) }
+
+                    val dbHelper = DatabaseHelper(requireActivity())
+
+                    if (predict_product != null) {
+                        for (number in predict_product) {
+                            val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
+                            Log.d(TAG, "answer: $recipeNumbers")
+                            responseTextView.text = "Response Body: $predict_product, $recipeNumbers"
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        performPostRequest(apiUrl, requestBody, callback)
+
         return false
     }
+
+    fun performPostRequest(url: String, requestBody: RequestBody, callback: Callback) {
+        val client = OkHttpClient()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(callback)
+    }
+
+
+    private fun parseClasses(jsonText: String): MutableList<String> {
+        val classes = mutableListOf<String>()
+
+        try {
+            val json = JSONObject(jsonText)
+            val predictionsArray = json.getJSONArray("predictions")
+
+            val translations = mapOf(
+                "milk" to "молоко",
+                "peach" to "персик",
+                "orange" to "апельсин",
+                "carrot" to "морковь",
+                "mandarin" to "мандарин",
+                "tomato" to "помидор",
+                "bell pepper" to "перец",
+                "eggplant" to "баклажан",
+                "potato" to "картофель",
+                "chili" to "перец чили",
+                "peppers" to "перец",
+                "egg" to "яйцо",
+                "apple" to "яблоко",
+                "garlic" to "чеснок",
+                "cucumber" to "огурец",
+                "lemon" to "лимон",
+                "bulb onion" to "репчатый лук",
+                "banana" to "банан",
+                "pear" to "груша",
+                "zucchini" to "цукини",
+                "cabbage" to "капуста",
+                "strawberry" to "клубника",
+                "chicken meat" to "куриц",
+                "pork" to "свинина",
+                "cherry" to "вишня",
+                "grape" to "виноград",
+                "green onion" to "зеленый лук",
+                "mushrooms" to "грибы",
+                "beef" to "говядина"
+
+            )
+            val uniqueClasses = mutableSetOf<String>()
+
+            for (i in 0 until predictionsArray.length()) {
+                val prediction = predictionsArray.getJSONObject(i)
+                val className = prediction.getString("class")
+                val translatedClassName = translations[className]
+                translatedClassName?.let {
+                    if (!uniqueClasses.contains(it)) {
+                        uniqueClasses.add(it)
+                        classes.add(it)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+        return classes
+    }
+
 }
 
 
