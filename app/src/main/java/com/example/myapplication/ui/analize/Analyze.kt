@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.analize
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager
@@ -137,7 +138,9 @@ class Analyze : Fragment() {
                     Log.d(TAG, msg)
 
                     displayCapturedPhoto(savedUri)
+
                     analysis(savedUri)
+
                 }
             }
         )
@@ -207,15 +210,19 @@ class Analyze : Fragment() {
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun analysis(imageUri: Uri) {
         runBlocking {
             val jsonObject = recognizeQrCode(imageUri)
             if (jsonObject != null) {
-                Log.e(TAG, "namesArray $jsonObject")
+                Log.d(TAG, "namesArray $jsonObject")
             } else {
-                Log.e(TAG, "namesArray null")
-                handleAsJustPhoto(imageUri, requireContext().contentResolver)
+                Log.d(TAG, "namesArray null")
+
             }
+
+            check_products(imageUri)
+         //   handleAsJustPhoto()
 
         }
     }
@@ -272,7 +279,8 @@ class Analyze : Fragment() {
 
     fun extractNamesFromJSONObject(jsonString: JSONObject?): Array<String> {
 
-        val itemsArray = jsonString?.getJSONObject("data")?.getJSONObject("json")?.getJSONArray("items")
+        val itemsArray =
+            jsonString?.getJSONObject("data")?.getJSONObject("json")?.getJSONArray("items")
 
         val namesList = mutableListOf<String>()
 
@@ -287,17 +295,48 @@ class Analyze : Fragment() {
         return namesList.toTypedArray()
     }
 
-    fun handleAsJustPhoto(imageUri: Uri, contentResolver: ContentResolver): Boolean {
-        // Обработка обычного фото
-        println("Обработка обычного фото: $imageUri")
-        val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
+    private suspend fun handleAsJustPhoto(imageUri: Uri): JSONObject? =
+        withContext(Dispatchers.IO) {
 
-        val inputStream = contentResolver.openInputStream(imageUri)
+            val token = "hzA1SfCPcpXoK4L5LAKe"
+            val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=$token"
+
+            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+            val imageBytes = inputStream?.readBytes()
+            val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+            val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
+
+            val request = Request.Builder()
+                .url(apiUrl)
+                .post(requestBody)
+                .build()
+            val client = OkHttpClient()
+
+            val response = client.newCall(request).execute()
+            val jsonResponse = response.body?.string()
+            var jsonObject: JSONObject?
+            jsonObject = jsonResponse?.let { JSONObject(it) }
+
+
+            Log.d(TAG, "успешное сканирование продукта: $jsonObject")
+
+            return@withContext jsonObject
+
+        }
+
+    @SuppressLint("Recycle")
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun check_products(imageUri: Uri) {
+        val apiUrl =
+            "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
+
+        val inputStream: InputStream? = requireContext().contentResolver.openInputStream(imageUri)
         val imageBytes = inputStream?.readBytes()
 
         val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
 
-        val client = OkHttpClient()
+
         val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
 
         val callback = object : Callback {
@@ -313,7 +352,8 @@ class Analyze : Fragment() {
                 // responseBody содержит ответ от сервера в виде строки
                 activity?.runOnUiThread {
                     // Найти TextView по его ID
-                    val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
+                    val responseTextView =
+                        requireView().findViewById<TextView>(R.id.responseTextView)
                     // Установить значение responseBody в текстовое поле
                     val predict_product = responseBody?.let { parseClasses(it) }
 
@@ -323,7 +363,8 @@ class Analyze : Fragment() {
                         for (number in predict_product) {
                             val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
                             Log.d(TAG, "answer: $recipeNumbers")
-                            responseTextView.text = "Response Body: $predict_product, $recipeNumbers"
+                            responseTextView.text =
+                                "Response Body: $predict_product, $recipeNumbers"
                         }
                     }
                 }
@@ -331,23 +372,17 @@ class Analyze : Fragment() {
         }
 
 
-
-        performPostRequest(apiUrl, requestBody, callback)
-
-        return false
-    }
-
-    fun performPostRequest(url: String, requestBody: RequestBody, callback: Callback) {
         val client = OkHttpClient()
 
         val request = Request.Builder()
-            .url(url)
+            .url(apiUrl)
             .post(requestBody)
             .build()
 
         client.newCall(request).enqueue(callback)
-    }
 
+
+    }
 
     private fun parseClasses(jsonText: String): MutableList<String> {
         val classes = mutableListOf<String>()
