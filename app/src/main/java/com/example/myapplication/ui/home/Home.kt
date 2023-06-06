@@ -2,6 +2,7 @@ package com.example.myapplication.ui.home
 
 import FoodAdapter
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
@@ -20,7 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Home : Fragment() {
+class Home : Fragment(), RecipeClickListener {
 
     companion object {
         fun newInstance() = Home()
@@ -44,7 +46,10 @@ class Home : Fragment() {
         var offset = 0
 
         binding.reView.layoutManager = LinearLayoutManager(context)
-        val adapter = RecipeAdapter()
+
+
+
+        val adapter = RecipeAdapter(this)
         binding.reView.adapter = adapter
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -132,5 +137,24 @@ class Home : Fragment() {
         foodList = ArrayList()
         foodAdapter = FoodAdapter(foodList)
         recyclerView.adapter = foodAdapter
+    }
+
+    override fun onClick(recipe: Recipe) {
+        val fragment = CardFragment()
+        val bundle = Bundle()
+        bundle.putInt(RECIPE_ID_EXTRA, recipe.imageId.toInt())
+        val imageId = recipe.imageId.toIntOrNull()
+        if (imageId != null) {
+            bundle.putInt(RECIPE_ID_EXTRA, imageId)
+        } else {
+            // Обработка случая, когда значение imageId не может быть преобразовано в целое число
+        }
+        fragment.arguments = bundle
+
+        val fragmentManager = requireActivity().supportFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentContainer, fragment) // Замените `R.id.fragmentContainer` на идентификатор вашего контейнера для фрагментов
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 }

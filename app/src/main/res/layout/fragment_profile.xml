@@ -22,7 +22,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="45dp"
+        android:translationX="43dp"
         android:translationY="140dp" />
 
     <Button
@@ -41,7 +41,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="45dp"
+        android:translationX="43dp"
         android:translationY="230dp" />
 
     <Button
@@ -59,7 +59,7 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="45dp"
+        android:translationX="43dp"
         android:translationY="320dp" />
 
     <Button
@@ -76,8 +76,9 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="45dp"
-        android:translationY="410dp" />
+        android:translationX="43dp"
+        android:translationY="410dp"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/button"
@@ -94,6 +95,6 @@
         android:textColor="@color/simpleWhite"
         android:topLeftRadius="10dp"
         android:topRightRadius="10dp"
-        android:translationX="45dp"
+        android:translationX="43dp"
         android:translationY="50dp" />
 </FrameLayout>
