@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,6 +59,7 @@ class Analyze : Fragment() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var capturedImageView: ImageView
+    private lateinit var progressBar: ProgressBar
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -77,12 +79,15 @@ class Analyze : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[AnalizeViewModel::class.java]
         cameraExecutor = Executors.newSingleThreadExecutor()
         // recyclerView = view.findViewById(R.id.reView)
 
         capturedImageView = view.findViewById(R.id.capturedImageView)
+
+
 
 
         if (allPermissionsGranted()) {
@@ -266,11 +271,13 @@ class Analyze : Fragment() {
                     // Обработка кода 1
                     // ...
                     Log.d(TAG, "успешное сканирование чека: $jsonObject")
+
                 }
 
                 else -> {
                     // Обработка неизвестного кода
                     Log.d(TAG, "неуспешное сканирование чека")
+                    return@withContext null
                 }
             }
             Log.d(TAG, "qr: $jsonObject")
@@ -334,6 +341,9 @@ class Analyze : Fragment() {
     @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun check_products(imageUri: Uri) {
+        val responseTextView =
+            requireView().findViewById<TextView>(R.id.responseTextView)
+        responseTextView.text = "Я вижу здесь: ожидайте "
         val apiUrl =
             "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=hzA1SfCPcpXoK4L5LAKe"
 
@@ -353,13 +363,14 @@ class Analyze : Fragment() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
+
                 Log.d(TAG, "Запрос выполнен успешно responseBody. Ответ сервера: $responseBody")
+
                 // Обработка ответа от сервера
                 // responseBody содержит ответ от сервера в виде строки
                 activity?.runOnUiThread {
                     // Найти TextView по его ID
-                    val responseTextView =
-                        requireView().findViewById<TextView>(R.id.responseTextView)
+
                     // Установить значение responseBody в текстовое поле
                     val predict_product = responseBody?.let { parseClasses(it) }
 
@@ -369,8 +380,9 @@ class Analyze : Fragment() {
                         for (number in predict_product) {
                             val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
                             Log.d(TAG, "answer: $recipeNumbers")
+                            val result = predict_product?.joinToString(", ")
                             responseTextView.text =
-                                "Response Body: $predict_product, $recipeNumbers"
+                                "Я вижу здесь: $predict_product, $recipeNumbers"
                         }
                     }
                 }

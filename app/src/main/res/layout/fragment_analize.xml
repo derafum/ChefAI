@@ -24,6 +24,7 @@
             android:scaleType="fitCenter"
             android:contentDescription="@string/the_photo_taken" />
 
+
         <TextView
             android:id="@+id/capturePromptTextView"
             android:layout_width="wrap_content"
@@ -43,7 +44,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="450dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="60dp"
             android:text="@string/scan_products" />
 
 
@@ -51,8 +52,9 @@
             android:id="@+id/responseTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="396dp"
-            android:text="@string/response_body"
+            android:text="Я вижу здесь:"
             android:textSize="16sp" />
 
         <androidx.recyclerview.widget.RecyclerView
