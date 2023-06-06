@@ -12,4 +12,6 @@
     <string name="scan_products">Сканировать продукты</string>
     <string name="response_body">Response Body:</string>
     <string name="the_photo_taken">the photo taken</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
