@@ -7,11 +7,12 @@
     tools:context=".ui.profile.Profile">
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button2"
         android:layout_width="310dp"
         android:layout_height="60dp"
         android:background="@drawable/roundstyle"
+
 
         android:backgroundTint="@color/mainPink"
         android:bottomLeftRadius="10dp"
@@ -25,7 +26,7 @@
         android:translationX="43dp"
         android:translationY="140dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button3"
         android:layout_width="310dp"
         android:layout_height="60dp"
@@ -44,7 +45,7 @@
         android:translationX="43dp"
         android:translationY="230dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button5"
         android:layout_width="310dp"
         android:layout_height="60dp"
@@ -62,7 +63,7 @@
         android:translationX="43dp"
         android:translationY="320dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button6"
         android:layout_width="310dp"
         android:layout_height="60dp"
@@ -70,6 +71,7 @@
         android:backgroundTint="@color/mainPink"
         android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
+        app:iconifiedByDefault="false"
 
         android:gravity="center|clip_vertical"
         android:text="О приложении"
@@ -80,7 +82,7 @@
         android:translationY="410dp"
         android:visibility="visible" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
         android:layout_width="310dp"
         android:layout_height="60dp"
