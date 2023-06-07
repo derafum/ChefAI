@@ -1,5 +1,3 @@
-package com.example.myapplication
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
@@ -14,7 +12,6 @@ import java.io.InputStream
 class DatabaseHelper(private val context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-
     companion object {
         private const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "rec.db"
@@ -24,6 +21,10 @@ class DatabaseHelper(private val context: Context) :
         private const val COLUMN_NUMBER = "number"
         private const val COLUMN_NAME = "name"
         private const val COLUMN_TIME = "time"
+        private const val COLUMN_AMOUNT_SERVINGS = "amount_servings"
+        private const val COLUMN_ENERGY = "energy"
+        private const val COLUMN_INGREDIENTS = "ingredients"
+        private const val COLUMN_INSTRUCTIONS = "instructions"
     }
 
     private val databasePath: String by lazy { context.getDatabasePath(DATABASE_NAME).path }
@@ -53,7 +54,6 @@ class DatabaseHelper(private val context: Context) :
             e.printStackTrace()
         }
     }
-
 
     override fun onCreate(db: SQLiteDatabase) {
         // Database creation not needed here since it's already created from the assets
@@ -85,7 +85,6 @@ class DatabaseHelper(private val context: Context) :
     }
 
 
-
     @SuppressLint("Range")
     fun getRecipeNumbersByIngredients(ingredients: String): List<Int> {
         val db = this.readableDatabase
@@ -111,10 +110,6 @@ class DatabaseHelper(private val context: Context) :
 
         return recipeNumbers
     }
-
-
-
-
 
 
     data class Recipe_bd(val name: String, val img: String, val time: String)
@@ -145,59 +140,44 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
-
     @SuppressLint("Range")
-    fun getRecipesByNumber(number: Int): List<Recipe_bd> {
-        val db = this.readableDatabase
-        var cursor: Cursor? = null
-        val result = mutableListOf<Recipe_bd>()
-
-        try {
-            cursor = db.rawQuery(
-                "SELECT $COLUMN_NAME, $COLUMN_IMG, $COLUMN_TIME FROM $TABLE_NAME WHERE $COLUMN_NUMBER = ?",
-                arrayOf(number.toString())
-            )
-
-            while (cursor.moveToNext()) {
-                val name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
-                val img = cursor.getString(cursor.getColumnIndex(COLUMN_IMG))
-                val time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
-                result.add(Recipe_bd(name, img, time))
-            }
-        } catch (e: SQLiteException) {
-            // Handle exception
-        } finally {
-        }
-
-        return result
-    }
-
-
-    @SuppressLint("Range")
-    fun getRecipeDataByWord(word: String): List<RecipeData> {
+    fun getRecipeDataByName(word: String): List<RecipeData> {
         val db = this.readableDatabase
         var cursor: Cursor? = null
         val result = mutableListOf<RecipeData>()
 
         try {
-            val query =
-                "SELECT name, time, img, amount_servings, energy, ingredients, instructions FROM recipes WHERE LOWER(name) LIKE '%$word%' ORDER BY likes DESC LIMIT 15 OFFSET 0"
-            cursor = db.rawQuery(query, null)
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_NAME, $COLUMN_TIME, $COLUMN_IMG, $COLUMN_AMOUNT_SERVINGS, $COLUMN_ENERGY, $COLUMN_INGREDIENTS, $COLUMN_INSTRUCTIONS, $COLUMN_NUMBER FROM $TABLE_NAME WHERE LOWER($COLUMN_NAME) LIKE '%$word%' ORDER BY $COLUMN_NUMBER DESC",
+                null
+            )
 
             while (cursor.moveToNext()) {
-                val name = cursor.getString(cursor.getColumnIndex("name"))
-                val time = cursor.getString(cursor.getColumnIndex("time"))
-                val img = cursor.getString(cursor.getColumnIndex("img"))
-                val amountServings = cursor.getString(cursor.getColumnIndex("amount_servings"))
-                val energy = cursor.getString(cursor.getColumnIndex("energy"))
-                val ingredients = cursor.getString(cursor.getColumnIndex("ingredients"))
-                val instructions = cursor.getString(cursor.getColumnIndex("instructions"))
-
-                val recipeData = RecipeData(name, time, img, amountServings, energy, ingredients, instructions)
-                result.add(recipeData)
+                val name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                val time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
+                val img = cursor.getString(cursor.getColumnIndex(COLUMN_IMG))
+                val amountServings = cursor.getString(cursor.getColumnIndex(COLUMN_AMOUNT_SERVINGS))
+                val energy = cursor.getString(cursor.getColumnIndex(COLUMN_ENERGY))
+                val ingredients = cursor.getString(cursor.getColumnIndex(COLUMN_INGREDIENTS))
+                val instructions = cursor.getString(cursor.getColumnIndex(COLUMN_INSTRUCTIONS))
+                val number = cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+                if (img != null) {
+                    result.add(
+                        RecipeData(
+                            name,
+                            time,
+                            img,
+                            amountServings,
+                            energy,
+                            ingredients,
+                            instructions,
+                            number
+                        )
+                    )
+                }
             }
         } catch (e: SQLiteException) {
-            // Обрабатывайте исключение по вашему усмотрению
+            // Handle exception
         } finally {
             cursor?.close()
             db.close()
@@ -205,14 +185,15 @@ class DatabaseHelper(private val context: Context) :
 
         return result
     }
-}
 
-data class RecipeData(
-    val name: String,
-    val time: String,
-    val img: String,
-    val amountServings: String,
-    val energy: String,
-    val ingredients: String,
-    val instructions: String
-)
+    data class RecipeData(
+        val name: String,
+        val time: String,
+        val img: String,
+        val amountServings: String,
+        val energy: String,
+        val ingredients: String,
+        val instructions: String,
+        val number: Int
+    )
+}
