@@ -34,7 +34,7 @@ class CardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_card, container, false)
+        return inflater.inflate(R.layout.activity_card, container, false)
     }
 
     companion object {
