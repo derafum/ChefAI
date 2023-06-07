@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
             reView.layoutManager = LinearLayoutManager(this@MainActivity)
             reView.adapter = adapter
             for (i in 1..4){
-                val recipe = Recipe(imageIdList[i], "Recipe $i", "Time: 10 минут" )
+                val recipe = com.example.myapplication.Recipe(imageIdList[i], "com.example.myapplication.Recipe $i", "Time: 10 минут" )
                 adapter.addRecipe(recipe)
             }
         }

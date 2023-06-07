@@ -70,7 +70,7 @@ class Search : Fragment() {
         adapter.notifyDataSetChanged()
 
         for (recipeData in recipeDataList) {
-            Log.d(TAG, "Recipe Name: ${recipeData.name}")
+            Log.d(TAG, "com.example.myapplication.Recipe Name: ${recipeData.name}")
             Log.d(TAG, "Time: ${recipeData.time}")
             Log.d(TAG, "Image: ${recipeData.img}")
             Log.d(TAG, "Energy: ${recipeData.energy}")

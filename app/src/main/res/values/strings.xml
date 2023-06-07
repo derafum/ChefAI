@@ -14,4 +14,6 @@
     <string name="the_photo_taken">the photo taken</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_card">CardActivity</string>
 </resources>
