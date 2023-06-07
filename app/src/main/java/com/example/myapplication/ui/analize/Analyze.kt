@@ -138,8 +138,9 @@ class Analyze : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri ?: return
                     val msg = "Saved: $savedUri"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-
+                 // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    val msg_for_user = "Фото сохранено успешно"
+                    Toast.makeText(requireContext(), msg_for_user, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
                     displayCapturedPhoto(savedUri)
@@ -382,7 +383,7 @@ class Analyze : Fragment() {
                             Log.d(TAG, "answer: $recipeNumbers")
                             val result = predict_product?.joinToString(", ")
                             responseTextView.text =
-                                "Я вижу здесь: $predict_product, $recipeNumbers"
+                                "Я вижу здесь: $result, $recipeNumbers"
                         }
                     }
                 }
