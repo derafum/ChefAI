@@ -3,7 +3,6 @@ package com.example.myapplication.ui.analize
 import DatabaseHelper
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -17,7 +16,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,13 +32,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
@@ -59,7 +55,6 @@ class Analyze : Fragment() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var capturedImageView: ImageView
-    private lateinit var progressBar: ProgressBar
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -138,7 +133,7 @@ class Analyze : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri ?: return
                     val msg = "Saved: $savedUri"
-                 // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     val msg_for_user = "Фото сохранено успешно"
                     Toast.makeText(requireContext(), msg_for_user, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
@@ -219,24 +214,26 @@ class Analyze : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun analysis(imageUri: Uri) {
         runBlocking {
+            val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
             val jsonObject = recognizeQrCode(imageUri)
             if (jsonObject != null) {
-                Log.d(TAG, "namesArray $jsonObject")
+                Log.d(TAG, "namesArray...")
+
+                responseTextView.text = "Я вижу здесь: чек =)"
             } else {
                 Log.d(TAG, "namesArray null")
                 check_products(imageUri)
-
             }
-
-
-         //   handleAsJustPhoto()
+            //   handleAsJustPhoto()
 
         }
     }
 
+    @SuppressLint("Recycle")
     private suspend fun recognizeQrCode(imageUri: Uri): JSONObject? = withContext(Dispatchers.IO) {
         try {
-            val inputStream: InputStream? = requireContext().contentResolver.openInputStream(imageUri)
+            val inputStream: InputStream? =
+                requireContext().contentResolver.openInputStream(imageUri)
             val imageBytes = inputStream?.readBytes()
 
             val qrFile = File(requireContext().cacheDir, "qrCode.jpg")
@@ -261,7 +258,7 @@ class Analyze : Fragment() {
                 .build()
             val client = OkHttpClient()
 
-            var jsonObject: JSONObject? = null
+            val jsonObject: JSONObject?
 
             val response = client.newCall(request).execute()
             val jsonResponse = response.body?.string()
@@ -271,7 +268,7 @@ class Analyze : Fragment() {
                 1 -> {
                     // Обработка кода 1
                     // ...
-                    Log.d(TAG, "успешное сканирование чека: $jsonObject")
+                    Log.d(TAG, "успешное сканирование чека")
 
                 }
 
@@ -290,54 +287,6 @@ class Analyze : Fragment() {
         }
     }
 
-
-    fun extractNamesFromJSONObject(jsonString: JSONObject?): Array<String> {
-
-        val itemsArray =
-            jsonString?.getJSONObject("data")?.getJSONObject("json")?.getJSONArray("items")
-
-        val namesList = mutableListOf<String>()
-
-        if (itemsArray != null) {
-            for (i in 0 until itemsArray.length()) {
-                val itemObject = itemsArray.getJSONObject(i)
-                val name = itemObject.getString("name")
-                namesList.add(name)
-            }
-        }
-
-        return namesList.toTypedArray()
-    }
-
-    private suspend fun handleAsJustPhoto(imageUri: Uri): JSONObject? =
-        withContext(Dispatchers.IO) {
-
-            val token = "hzA1SfCPcpXoK4L5LAKe"
-            val apiUrl = "https://detect.roboflow.com/-object-detection-pukbl/3?api_key=$token"
-
-            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
-            val imageBytes = inputStream?.readBytes()
-            val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
-
-            val requestBody = encodedImage.toRequestBody("application/json".toMediaType())
-
-            val request = Request.Builder()
-                .url(apiUrl)
-                .post(requestBody)
-                .build()
-            val client = OkHttpClient()
-
-            val response = client.newCall(request).execute()
-            val jsonResponse = response.body?.string()
-            var jsonObject: JSONObject?
-            jsonObject = jsonResponse?.let { JSONObject(it) }
-
-
-            Log.d(TAG, "успешное сканирование продукта: $jsonObject")
-
-            return@withContext jsonObject
-
-        }
 
     @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -359,9 +308,11 @@ class Analyze : Fragment() {
         val callback = object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 // Обработка ошибок при выполнении запроса
+                responseTextView.text = "Ошибка при отправке запроса"
                 e.printStackTrace()
             }
 
+            @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
 
@@ -377,14 +328,16 @@ class Analyze : Fragment() {
 
                     val dbHelper = DatabaseHelper(requireActivity())
 
-                    if (predict_product != null) {
+                    if (!predict_product.isNullOrEmpty()) {
                         for (number in predict_product) {
                             val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
                             Log.d(TAG, "answer: $recipeNumbers")
-                            val result = predict_product?.joinToString(", ")
+                            val result = predict_product.joinToString(", ")
                             responseTextView.text =
                                 "Я вижу здесь: $result, $recipeNumbers"
                         }
+                    } else {
+                        responseTextView.text = "Ничего не удалось найти"
                     }
                 }
             }
