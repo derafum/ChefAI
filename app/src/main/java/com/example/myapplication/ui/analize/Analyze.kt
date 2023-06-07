@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.analize
 
+import DatabaseHelper
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -26,7 +27,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.myapplication.DatabaseHelper
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAnalizeBinding
 import kotlinx.coroutines.Dispatchers
