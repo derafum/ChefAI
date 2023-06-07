@@ -14,10 +14,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.DatabaseHelper
 import com.example.myapplication.R
+import com.example.myapplication.RecipeAdapter
+import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.databinding.FragmentHomeBinding
 import com.example.myapplication.databinding.FragmentSearchBinding
 import com.example.myapplication.ui.analize.Analyze
 
 class Search : Fragment() {
+    private lateinit var binding: FragmentHomeBinding
+    private val adapter = RecipeAdapter()
+    private val imageIdList = listOf(
+        R.drawable.recipe1,
+        R.drawable.recipe2,
+        R.drawable.recipe3,
+        R.drawable.recipe4,
+        R.drawable.recipe5,
+        R.drawable.recipe6,
+    )
+    private var index = 0
+
 
     companion object {
         fun newInstance() = Search()
