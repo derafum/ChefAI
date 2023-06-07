@@ -39,6 +39,12 @@
         <action
             android:id="@+id/action_navigation_profile_to_startedPage2"
             app:destination="@id/startedPage2" />
+        <action
+            android:id="@+id/action_navigation_profile_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_productListFragment"
+            app:destination="@id/productListFragment" />
     </fragment>
     <fragment
         android:id="@+id/descriptionFragment2"
@@ -50,5 +56,15 @@
         android:name="com.example.myapplication.StartedPage"
         android:label="started_page"
         tools:layout="@layout/started_page" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.myapplication.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/productListFragment"
+        android:name="com.example.myapplication.ProductListFragment"
+        android:label="fragment_product_list"
+        tools:layout="@layout/fragment_product_list" />
 
 </navigation>

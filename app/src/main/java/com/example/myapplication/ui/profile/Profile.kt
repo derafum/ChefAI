@@ -33,12 +33,20 @@ class Profile : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.button3.setOnClickListener {
+        binding.button6.setOnClickListener {
             MAIN.navController1.navigate(R.id.action_navigation_profile_to_descriptionFragment2)
         }
 
         binding.button2.setOnClickListener {
             MAIN.navController1.navigate(R.id.action_navigation_profile_to_startedPage2)
+        }
+
+        binding.button3.setOnClickListener {
+            MAIN.navController1.navigate(R.id.action_navigation_profile_to_settingsFragment)
+        }
+
+        binding.button.setOnClickListener {
+            MAIN.navController1.navigate(R.id.action_navigation_profile_to_productListFragment)
         }
 
         binding.button5.setOnClickListener {

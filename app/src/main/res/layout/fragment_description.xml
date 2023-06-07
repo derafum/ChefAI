@@ -6,18 +6,67 @@
     android:layout_height="match_parent"
     tools:context=".DescriptionFragment">
 
+
     <TextView
-        android:id="@+id/textViewMessage"
+        android:id="@+id/textView24"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:text="Над приложением работала команда &quot;ChefAi Team&quot; в составе следующих подающих надежды джентельменов:"
+        android:textColor="@color/mainBlack"
+        android:textIsSelectable="false"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:translationY="15dp" />
+
+    <TextView
+        android:id="@+id/textView25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Раздел в разработке"
-        android:layout_centerInParent="true" />
+        android:text="Красавин Георгий — шеф нашей команды, следит за всеми, учавствует в каждом процессе"
+        android:textColor="@color/mainBlack"
+        android:translationY="90dp" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="327dp"
-        android:layout_height="302dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/maxresdefault" />
+    <TextView
+        android:id="@+id/textView26"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ищенко Иоанн — техлид и советчик по любым вопросам (даже лучше чем ChatGPT)"
+        android:textColor="@color/mainBlack"
+        android:translationY="140dp" />
 
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сериков Данила — главный по нейронным сетям и ИИ (возможно, именно из-за него Скайнет поработит всех нас, но лучше об этом не думать;)"
+        android:textColor="@color/mainBlack"
+        android:translationY="190dp" />
+
+    <TextView
+        android:id="@+id/textView28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ткаченко Никита — разработчик мобильного приложения"
+        android:textColor="@color/mainBlack"
+        android:translationY="260dp" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Журавлев Никита — ещё один разработчик мобильного приложения (нас много не бывает:)"
+        android:textColor="@color/mainBlack"
+        android:translationY="300dp" />
+
+    <TextView
+        android:id="@+id/textView30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="СПАСИБО ВСЕМ ЗА ВСЁ!!!"
+        android:textColor="@color/mainBlack"
+        android:textStyle="bold"
+        android:translationX="110dp"
+        android:translationY="400dp" />
 </RelativeLayout>
