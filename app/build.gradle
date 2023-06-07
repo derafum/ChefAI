@@ -148,4 +148,9 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     implementation 'androidx.fragment:fragment:1.5.7'
+
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    implementation 'io.coil-kt:coil-compose:1.4.0'
+
 }

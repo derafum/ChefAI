@@ -188,4 +188,21 @@
         android:textColor="@color/mainBlack"
         android:translationY="537dp" />
 
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/mainBlack"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:translationY="217dp" />
+
+    <ImageView
+        android:id="@+id/imageViewFood"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:translationY="36dp" />
+
 </FrameLayout>

@@ -186,17 +186,6 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
-    data class RecipeData(
-        val name: String,
-        val time: String,
-        val img: String,
-        val amountServings: String,
-        val energy: String,
-        val ingredients: String,
-        val instructions: String,
-        val number: Int
-    )
-
     @SuppressLint("Range")
     fun getRecipeDataByNumber(number: Int): Recipe_bd? {
         val db = this.readableDatabase
@@ -223,4 +212,57 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
+    @SuppressLint("Range")
+    fun getRecipeDataByImg(img: String): List<RecipeData> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val result = mutableListOf<RecipeData>()
+
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_NAME, $COLUMN_TIME, $COLUMN_IMG, $COLUMN_AMOUNT_SERVINGS, $COLUMN_ENERGY, $COLUMN_INGREDIENTS, $COLUMN_INSTRUCTIONS, $COLUMN_NUMBER FROM $TABLE_NAME WHERE $COLUMN_IMG = ?",
+                arrayOf(img)
+            )
+
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME))
+                val time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
+                val amountServings = cursor.getString(cursor.getColumnIndex(COLUMN_AMOUNT_SERVINGS))
+                val energy = cursor.getString(cursor.getColumnIndex(COLUMN_ENERGY))
+                val ingredients = cursor.getString(cursor.getColumnIndex(COLUMN_INGREDIENTS))
+                val instructions = cursor.getString(cursor.getColumnIndex(COLUMN_INSTRUCTIONS))
+                val number = cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+
+                result.add(
+                    RecipeData(
+                        name,
+                        time,
+                        img,
+                        amountServings,
+                        energy,
+                        ingredients,
+                        instructions,
+                        number
+                    )
+                )
+            }
+        } catch (e: SQLiteException) {
+            // Handle exception
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return result
+    }
+    data class RecipeData(
+        val name: String,
+        val time: String,
+        val img: String,
+        val amountServings: String,
+        val energy: String,
+        val ingredients: String,
+        val instructions: String,
+        val number: Int
+    )
 }

@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.Food
 import com.example.myapplication.R
+import com.example.myapplication.ui.home.Home
 
-class FoodAdapter(val foodList: List<Food>, private val onItemClickListener: OnItemClickListener) :
+class FoodAdapter(val foodList: List<Food>, private val onItemClickListener: Home) :
     RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
     interface OnItemClickListener {

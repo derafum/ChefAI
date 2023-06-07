@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.home
 
+
 import DatabaseHelper
 import FoodAdapter
 import RecipeAdapter
@@ -11,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +19,7 @@ import com.example.myapplication.*
 import com.example.myapplication.databinding.FragmentHomeBinding
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.example.myapplication.ui.likes.Likes
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,6 +36,9 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
     private lateinit var foodList: ArrayList<Food>
     private lateinit var foodAdapter: FoodAdapter
     private lateinit var binding: FragmentHomeBinding
+
+    private var foodItemClickListener: OnFoodItemClickListener? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,14 +132,13 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         val foodItem = foodAdapter.foodList[position]
-        Log.d("SliderCardClick", "Title: ${foodItem}")
+        Log.d("SliderCardClick", "Title: $foodItem")
 
-        val intent = Intent(requireContext(), StartedPage::class.java)
+        val gson = Gson()
+        val foodItemJson = gson.toJson(foodItem)
 
-        // Дополнительные данные, если необходимо передать информацию
-        intent.putExtra("recipePosition", position)
-
-        // Запуск активити
+        val intent = Intent(requireContext(), CardActivity::class.java)
+        intent.putExtra("foodItemJson", foodItemJson)
         startActivity(intent)
     }
 
@@ -148,4 +150,16 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
         foodAdapter = FoodAdapter(foodList, this@Home)
         recyclerView.adapter = foodAdapter
     }
+    interface OnFoodItemClickListener {
+        fun onFoodItemClick(foodItem: Food)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFoodItemClickListener) {
+            foodItemClickListener = context
+        }
+    }
+
 }
+
