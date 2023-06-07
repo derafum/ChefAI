@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/please_take_a_photo"
+            android:text="Сфотографируйте продукты на столе или чек"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:padding="12dp"
@@ -60,8 +60,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/reView"
             android:layout_width="match_parent"
-            android:layout_height="688dp"
-            android:layout_marginTop="420dp"
+            android:layout_height="668dp"
+            android:layout_marginTop="440dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -2,6 +2,7 @@ package com.example.myapplication.ui.home
 
 import DatabaseHelper
 import FoodAdapter
+import RecipeAdapter
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -31,14 +32,10 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
     }
 
     private lateinit var viewModel: HomeViewModel
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var foodList: ArrayList<Food>
     private lateinit var foodAdapter: FoodAdapter
-
     private lateinit var binding: FragmentHomeBinding
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +66,6 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
             withContext(Dispatchers.IO) {
                 val lenCountRecommend = requireContext().getSharedPreferences("length", Context.MODE_PRIVATE)?.getInt("len", 0)
 
-
                 val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val countRecommendSet = sharedPreferences?.getString("test", "")
 
@@ -94,7 +90,7 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
 
                 val python = Python.getInstance()
                 val module = python.getModule("Rec_system_new")
-                val foodList = ArrayList<Food>()
+                foodList = ArrayList()
 
                 for (number in countRecommendList) {
                     val getNumberFunction = module.callAttr("rec_system", number)
@@ -142,9 +138,7 @@ class Home : Fragment(), FoodAdapter.OnItemClickListener {
 
         // Запуск активити
         startActivity(intent)
-
     }
-
 
     private fun init() {
         recyclerView = binding.RecyclerView

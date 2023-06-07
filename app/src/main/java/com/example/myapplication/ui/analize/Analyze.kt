@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.analize
 
 import DatabaseHelper
+import RecipeAdapter
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -25,9 +26,15 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
+import com.example.myapplication.Recipe
+
 import com.example.myapplication.databinding.FragmentAnalizeBinding
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -134,8 +141,8 @@ class Analyze : Fragment() {
                     val savedUri = output.savedUri ?: return
                     val msg = "Saved: $savedUri"
                     // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    val msg_for_user = "Фото сохранено успешно"
-                    Toast.makeText(requireContext(), msg_for_user, Toast.LENGTH_SHORT).show()
+                    val msgForUser = "Фото сохранено успешно"
+                    Toast.makeText(requireContext(), msgForUser, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
                     displayCapturedPhoto(savedUri)
@@ -211,18 +218,48 @@ class Analyze : Fragment() {
             }
         }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     fun analysis(imageUri: Uri) {
         runBlocking {
             val responseTextView = requireView().findViewById<TextView>(R.id.responseTextView)
             val jsonObject = recognizeQrCode(imageUri)
             if (jsonObject != null) {
-                Log.d(TAG, "namesArray...")
+                Log.d(TAG, "namesArray... $jsonObject")
 
-                responseTextView.text = "Я вижу здесь: чек =)"
+                val names = getNamesFromJSONObject(jsonObject)
+                val matchingProducts = findMatchingProducts(names)
+
+                responseTextView.text = "Я вижу здесь: чек =). Продукты: ${matchingProducts.joinToString(", ")}"
+                val dbHelper = DatabaseHelper(requireActivity())
+                for (product in matchingProducts){
+
+                    val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(product)
+
+                    binding.reView.layoutManager = LinearLayoutManager(context)
+                    val adapter = RecipeAdapter()
+                    binding.reView.adapter = adapter
+
+                    for (number in recipeNumbers) {
+                        GlobalScope.launch(Dispatchers.Main) {
+                            val recipes = withContext(Dispatchers.IO) {
+                                dbHelper.getRecipeDataByNumber(number)
+                            }
+
+
+                            val name = recipes!!.name
+                            val img = recipes.img
+                            val time = recipes.time
+                            val recipeItem = Recipe(img, name, "Time: $time")
+                            adapter.addRecipe(recipeItem)
+                            Log.d("CameraXApp", "Name, $name, img, $img, time, $time")
+
+                        }
+                    }
+                }
             } else {
                 Log.d(TAG, "namesArray null")
-                check_products(imageUri)
+                checkProducts(imageUri)
             }
             //   handleAsJustPhoto()
 
@@ -269,9 +306,7 @@ class Analyze : Fragment() {
                     // Обработка кода 1
                     // ...
                     Log.d(TAG, "успешное сканирование чека")
-
                 }
-
                 else -> {
                     // Обработка неизвестного кода
                     Log.d(TAG, "неуспешное сканирование чека")
@@ -288,9 +323,10 @@ class Analyze : Fragment() {
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun check_products(imageUri: Uri) {
+    private fun checkProducts(imageUri: Uri) {
         val responseTextView =
             requireView().findViewById<TextView>(R.id.responseTextView)
         responseTextView.text = "Я вижу здесь: ожидайте "
@@ -329,12 +365,35 @@ class Analyze : Fragment() {
                     val dbHelper = DatabaseHelper(requireActivity())
 
                     if (!predict_product.isNullOrEmpty()) {
-                        for (number in predict_product) {
-                            val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(number)
+                        for (product in predict_product) {
+                            val recipeNumbers = dbHelper.getRecipeNumbersByIngredients(product)
                             Log.d(TAG, "answer: $recipeNumbers")
                             val result = predict_product.joinToString(", ")
                             responseTextView.text =
-                                "Я вижу здесь: $result, $recipeNumbers"
+                                "Я вижу здесь: $result"
+
+
+
+                            binding.reView.layoutManager = LinearLayoutManager(context)
+                            val adapter = RecipeAdapter()
+                            binding.reView.adapter = adapter
+
+                            for (number in recipeNumbers) {
+                                GlobalScope.launch(Dispatchers.Main) {
+                                    val recipes = withContext(Dispatchers.IO) {
+                                        dbHelper.getRecipeDataByNumber(number)
+                                    }
+
+
+                                    val name = recipes!!.name
+                                    val img = recipes.img
+                                    val time = recipes.time
+                                    val recipeItem = Recipe(img, name, "Time: $time")
+                                    adapter.addRecipe(recipeItem)
+                                    Log.d("CameraXApp", "Name, $name, img, $img, time, $time")
+
+                                }
+                            }
                         }
                     } else {
                         responseTextView.text = "Ничего не удалось найти"
@@ -416,6 +475,80 @@ class Analyze : Fragment() {
         return classes
     }
 
+
+    fun getNamesFromJSONObject(jsonObject: JSONObject?): String {
+        val names = mutableListOf<String>()
+        jsonObject?.optJSONObject("data")?.optJSONObject("json")?.optJSONArray("items")?.let { items ->
+            for (i in 0 until items.length()) {
+                val item = items.optJSONObject(i)
+                val name = item?.optString("name")
+                name?.let { names.add(it) }
+            }
+        }
+        return names.joinToString()
+    }
+
+
+    fun findMatchingProducts(names: String): Array<String> {
+        val products = arrayOf(
+            "томат", "огурц", "помидор", "молоко", "персик", "апельсин", "морковь", "мандарин", "перец",
+            "баклажан", "картофель", "картошк", "перец", "яйц", "яблок", "чеснок", "лимон", "репчатый лук",
+            "банан", "груш", "цукин", "капуст", "клубника", "куриц", "курин", "свинин", "вишн", "виноград",
+            "лук", "гриб", "говядин"
+        )
+
+        val foundProducts = mutableListOf<String>()
+
+        for (product in products) {
+            if (isProductMatch(names, product)) {
+                foundProducts.add(product)
+            }
+        }
+
+        return foundProducts.toTypedArray()
+    }
+
+    fun isProductMatch(names: String, product: String): Boolean {
+        val words = names.split("\\s+".toRegex())
+        for (word in words) {
+            val normalizedWord = word.toLowerCase().replace("[^а-яa-z]".toRegex(), "")
+            val normalizedProduct = product.toLowerCase().replace("[^а-яa-z]".toRegex(), "")
+            if (normalizedWord == normalizedProduct) {
+                return true
+            }
+            if (levenshteinDistance(normalizedWord, normalizedProduct) <= 2) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun levenshteinDistance(s1: String, s2: String): Int {
+        val m = s1.length
+        val n = s2.length
+        val d = Array(m + 1) { IntArray(n + 1) }
+
+        for (i in 0..m) {
+            d[i][0] = i
+        }
+
+        for (j in 0..n) {
+            d[0][j] = j
+        }
+
+        for (j in 1..n) {
+            for (i in 1..m) {
+                val substitutionCost = if (s1[i - 1] == s2[j - 1]) 0 else 1
+                d[i][j] = minOf(
+                    d[i - 1][j] + 1,
+                    d[i][j - 1] + 1,
+                    d[i - 1][j - 1] + substitutionCost
+                )
+            }
+        }
+
+        return d[m][n]
+    }
 }
 
 

@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.search
 import DatabaseHelper
+import RecipeAdapter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,15 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Recipe
-import com.example.myapplication.RecipeAdapter
 import com.example.myapplication.databinding.FragmentSearchBinding
-
 
 class Search : Fragment() {
 
     private val adapter = RecipeAdapter()
-
-
 
     companion object {
         fun newInstance() = Search()
@@ -58,6 +55,8 @@ class Search : Fragment() {
         binding.reView3.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.reView3.adapter = adapter // Установка адаптера для RecyclerView
+
+
     }
 
     private fun logSearchText(query: String) {

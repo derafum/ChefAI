@@ -63,6 +63,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -116,5 +119,5 @@ dependencies {
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
-
+    implementation 'androidx.fragment:fragment:1.5.7'
 }
