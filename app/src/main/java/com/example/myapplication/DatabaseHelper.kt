@@ -172,4 +172,47 @@ class DatabaseHelper(private val context: Context) :
         return result
     }
 
+
+    @SuppressLint("Range")
+    fun getRecipeDataByWord(word: String): List<RecipeData> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val result = mutableListOf<RecipeData>()
+
+        try {
+            val query =
+                "SELECT name, time, img, amount_servings, energy, ingredients, instructions FROM recipes WHERE LOWER(name) LIKE '%$word%' ORDER BY likes DESC LIMIT 15 OFFSET 0"
+            cursor = db.rawQuery(query, null)
+
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(cursor.getColumnIndex("name"))
+                val time = cursor.getString(cursor.getColumnIndex("time"))
+                val img = cursor.getString(cursor.getColumnIndex("img"))
+                val amountServings = cursor.getString(cursor.getColumnIndex("amount_servings"))
+                val energy = cursor.getString(cursor.getColumnIndex("energy"))
+                val ingredients = cursor.getString(cursor.getColumnIndex("ingredients"))
+                val instructions = cursor.getString(cursor.getColumnIndex("instructions"))
+
+                val recipeData = RecipeData(name, time, img, amountServings, energy, ingredients, instructions)
+                result.add(recipeData)
+            }
+        } catch (e: SQLiteException) {
+            // Обрабатывайте исключение по вашему усмотрению
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return result
+    }
 }
+
+data class RecipeData(
+    val name: String,
+    val time: String,
+    val img: String,
+    val amountServings: String,
+    val energy: String,
+    val ingredients: String,
+    val instructions: String
+)
