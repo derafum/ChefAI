@@ -114,10 +114,10 @@ class DatabaseHelper(private val context: Context) :
 
     data class Recipe_bd(val name: String, val img: String, val time: String)
 
-    @SuppressLint("Range")
+    @SuppressLint("Range", "Recycle")
     fun getTopRecipesByLikes(limit: Int, offset: Int): List<Recipe_bd> {
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         val result = mutableListOf<Recipe_bd>()
 
         try {
@@ -148,8 +148,8 @@ class DatabaseHelper(private val context: Context) :
 
         try {
             cursor = db.rawQuery(
-                "SELECT $COLUMN_NAME, $COLUMN_TIME, $COLUMN_IMG, $COLUMN_AMOUNT_SERVINGS, $COLUMN_ENERGY, $COLUMN_INGREDIENTS, $COLUMN_INSTRUCTIONS, $COLUMN_NUMBER FROM $TABLE_NAME WHERE LOWER($COLUMN_NAME) LIKE '%$word%' ORDER BY $COLUMN_NUMBER DESC",
-                null
+                "SELECT $COLUMN_NAME, $COLUMN_TIME, $COLUMN_IMG, $COLUMN_AMOUNT_SERVINGS, $COLUMN_ENERGY, $COLUMN_INGREDIENTS, $COLUMN_INSTRUCTIONS, $COLUMN_NUMBER FROM $TABLE_NAME WHERE LOWER($COLUMN_NAME) LIKE ? ORDER BY $COLUMN_NUMBER DESC LIMIT 20",
+                arrayOf("%$word%")
             )
 
             while (cursor.moveToNext()) {
