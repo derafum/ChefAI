@@ -22,6 +22,7 @@ class DescriptionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+
         binding = FragmentDescriptionBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
